@@ -7,7 +7,7 @@ import {
 import { useSidebarStore } from '../store';
 
 export type SidebarContentErrorProps = {
-  errorType: 'annotation' | 'group';
+  errorType: 'chat' | 'annotation' | 'group';
 
   /** Whether or not to render a "Clear selection" button */
   showClearSelection?: boolean;

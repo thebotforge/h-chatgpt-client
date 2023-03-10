@@ -5,8 +5,10 @@ import Toolbar from './components/Toolbar';
 /**
  * @typedef ToolbarOptions
  * @prop {() => void} createAnnotation
+ * @prop {() => void} createChat
  * @prop {(open: boolean) => void} setSidebarOpen
  * @prop {(visible: boolean) => void} setHighlightsVisible
+ * @prop {(visible: boolean) => void} setChatsVisible
  */
 
 /**
@@ -21,7 +23,7 @@ export class ToolbarController {
    * @param {ToolbarOptions} options
    */
   constructor(container, options) {
-    const { createAnnotation, setSidebarOpen, setHighlightsVisible } = options;
+    const { createAnnotation, createChat, setChatsVisible, setSidebarOpen, setHighlightsVisible } = options;
 
     this._container = container;
 
@@ -31,6 +33,7 @@ export class ToolbarController {
     this._newAnnotationType = 'note';
 
     this._highlightsVisible = false;
+    this._chatsVisible = false;
     this._sidebarOpen = false;
 
     this._closeSidebar = () => setSidebarOpen(false);
@@ -39,6 +42,12 @@ export class ToolbarController {
       setHighlightsVisible(!this._highlightsVisible);
     this._createAnnotation = () => {
       createAnnotation();
+      setSidebarOpen(true);
+    };
+
+    this._toggleChat = () => setChatsVisible(!this._chatsVisible);
+    this._createChat = () => {
+      createChat();
       setSidebarOpen(true);
     };
 
@@ -104,6 +113,20 @@ export class ToolbarController {
     return this._highlightsVisible;
   }
 
+
+  /**
+  * Update the toolbar to reflect whether highlights are currently visible.
+  */
+  set chatsVisible(visible) {
+    this._chatsVisible = visible;
+    this.render();
+  }
+
+  get chatsVisible() {
+    return this._chatsVisible;
+  }
+
+
   /**
    * Return the DOM element that toggles the sidebar's visibility.
    *
@@ -118,9 +141,12 @@ export class ToolbarController {
       <Toolbar
         closeSidebar={this._closeSidebar}
         createAnnotation={this._createAnnotation}
+        createChat={this._createChat}
         newAnnotationType={this._newAnnotationType}
         isSidebarOpen={this._sidebarOpen}
         showHighlights={this._highlightsVisible}
+        showChats={this._chatsVisible}
+        toggleChat={this._toggleChat}
         toggleHighlights={this._toggleHighlights}
         toggleSidebar={this._toggleSidebar}
         toggleSidebarRef={this._sidebarToggleButton}

@@ -373,6 +373,36 @@ export class FrameSyncService {
     });
 
     // A new annotation, note or highlight was created in the frame
+    guestRPC.on('createChat', (chat: AnnotationData) => {
+      // If user is not logged in, we can't really create a meaningful highlight
+      // or annotation. Instead, we need to open the sidebar, show an error,
+      // and delete the (unsaved) annotation so it gets un-selected in the
+      // target document
+      console.log('createChatEVent')
+      if (!this._store.isLoggedIn()) {
+        this._hostRPC.call('openSidebar');
+        this._store.openSidebarPanel('loginPrompt');
+        this._guestRPC.forEach(rpc => rpc.call('deleteAnnotation', chat.$tag));
+        return;
+      }
+      this._inFrame.add(chat.$tag);
+
+      // Open the sidebar so that the user can immediately edit the draft
+      // annotation.
+      if (!chat.$highlight) {
+        this._hostRPC.call('openSidebar');
+      }
+
+      // Ensure that the highlight for the newly-created annotation is visible.
+      // Currently we only support a single, shared visibility state for all highlights
+      // in all frames, so this will make all existing highlights visible too.
+      this._hostRPC.call('showHighlights');
+
+      // Create the new annotation in the sidebar.
+      this._annotationsService.create(chat);
+    });
+
+    // A new annotation, note or highlight was created in the frame
     guestRPC.on('createAnnotation', (annot: AnnotationData) => {
       // If user is not logged in, we can't really create a meaningful highlight
       // or annotation. Instead, we need to open the sidebar, show an error,

@@ -9,6 +9,11 @@ import {
   NoteIcon,
   ShowIcon,
 } from '@hypothesis/frontend-shared/lib/next';
+
+import {
+  ChatIcon
+} from './../../images/assets.js'
+
 import type {
   IconComponent,
   PresentationalProps,
@@ -69,6 +74,13 @@ export type ToolbarProps = {
   /** Callback for when "Create annotation" button is clicked. */
   createAnnotation: () => void;
 
+  /** Callback for when "Create chat" button is clicked. */
+  createChat: () => void;
+
+
+  /** Are chats currently visible in the document? */
+  showChats: boolean;
+
   /** Is the sidebar currently open? */
   isSidebarOpen: boolean;
 
@@ -85,6 +97,11 @@ export type ToolbarProps = {
 
   /** Callback for the show/hide highlights button */
   toggleHighlights: () => void;
+
+
+  /** Callback for the show/hide chat button */
+  toggleChat: () => void;
+  
 
   /**
    * Callback for toggling the visibility of the sidebar when the show/hide
@@ -116,10 +133,13 @@ export type ToolbarProps = {
 export default function Toolbar({
   closeSidebar,
   createAnnotation,
+  createChat,
   isSidebarOpen,
   newAnnotationType,
   showHighlights,
+  showChats,
   toggleHighlights,
+  toggleChat,
   toggleSidebar,
   toggleSidebarRef,
   useMinimalControls = false,
@@ -174,6 +194,13 @@ export default function Toolbar({
             {isSidebarOpen ? <CaretRightIcon /> : <CaretLeftIcon />}
           </ButtonBase>
           <div className="space-y-px-1.5 mt-px-2">
+
+          <ToolbarButton
+              title="Show chat"
+              icon={ChatIcon}
+              selected={showHighlights}
+              onClick={toggleChat}
+            />
             <ToolbarButton
               title="Show highlights"
               icon={showHighlights ? ShowIcon : HideIcon}
@@ -184,7 +211,7 @@ export default function Toolbar({
               title={
                 newAnnotationType === 'note'
                   ? 'New page note'
-                  : 'New annotation'
+                  : 'New annotation xxx'
               }
               icon={newAnnotationType === 'note' ? NoteIcon : AnnotateIcon}
               onClick={createAnnotation}

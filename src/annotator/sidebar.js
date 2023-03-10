@@ -181,8 +181,17 @@ export class Sidebar {
         const rpc = this._guestWithSelection ?? this._guestRPC[0];
         rpc.call('createAnnotation');
       },
+      createChat: () => {
+        if (this._guestRPC.length === 0) {
+          return;
+        }
+
+        const rpc = this._guestWithSelection ?? this._guestRPC[0];
+        rpc.call('createChat');
+      },
       setSidebarOpen: open => (open ? this.open() : this.close()),
       setHighlightsVisible: show => this.setHighlightsVisible(show),
+      setChatsVisible: show => this.setChatsVisible(show),
     });
 
     if (config.theme === 'clean') {
@@ -630,6 +639,19 @@ export class Sidebar {
     // Notify sidebar app of change which will in turn reflect state to guest frames.
     this._sidebarRPC.call('setHighlightsVisible', visible);
   }
+
+
+    /**
+   * Set whether highlights are visible in guest frames.
+   *
+   * @param {boolean} visible
+   */
+    setChatsVisible(visible) {
+      this.toolbar.chatsVisible = visible;
+  
+      // Notify sidebar app of change which will in turn reflect state to guest frames.
+      this._sidebarRPC.call('setChatsVisible', visible);
+    }
 
   /**
    * Shows the sidebar's controls

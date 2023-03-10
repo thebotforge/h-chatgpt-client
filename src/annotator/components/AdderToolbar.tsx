@@ -6,6 +6,11 @@ import {
   PointerUpIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import type { IconComponent } from '@hypothesis/frontend-shared/lib/types';
+
+import {
+  ChatIcon
+} from './../../images/assets.js'
+
 import classnames from 'classnames';
 
 import { useShortcut } from '../../shared/shortcut';
@@ -141,7 +146,7 @@ function AdderToolbarShortcuts({
   );
 }
 
-export type Command = 'annotate' | 'highlight' | 'show' | 'hide';
+export type Command = 'chat' | 'annotate' | 'highlight' | 'show' | 'hide';
 
 type AdderToolbarProps = {
   /**
@@ -208,6 +213,7 @@ export default function AdderToolbar({
   // of static text, we can use a plain key without any modifier as
   // the shortcut. This avoids conflicts with browser/OS shortcuts.
   const annotateShortcut = isVisible ? 'a' : null;
+  const chatShortcut = isVisible ? 'a' : null;
   const highlightShortcut = isVisible ? 'h' : null;
   const showShortcut = isVisible ? 's' : null;
   const hideShortcut = isVisible ? 'Escape' : null;
@@ -251,9 +257,15 @@ export default function AdderToolbar({
         )}
       >
         <ToolbarButton
+          icon={ChatIcon}
+          onClick={() => onCommand('chat')}
+          label="Chat"
+          shortcut={chatShortcut}
+        />
+        <ToolbarButton
           icon={AnnotateIcon}
           onClick={() => onCommand('annotate')}
-          label="Annotate"
+          label="Annotatex"
           shortcut={annotateShortcut}
         />
         <ToolbarButton

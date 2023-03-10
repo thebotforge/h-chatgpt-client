@@ -30,6 +30,10 @@ export type GuestToHostEvent =
  */
 export type GuestToSidebarEvent =
   /**
+   * The guest is asking the sidebar to create an chat.
+   */
+  | 'createChat'
+  /**
    * The guest is asking the sidebar to create an annotation.
    */
   | 'createAnnotation'
@@ -72,6 +76,10 @@ export type GuestToSidebarEvent =
  * Events that the host sends to the guest
  */
 export type HostToGuestEvent =
+
+  /** The host requests a guest to create an chat. */
+  | 'createChat'
+
   /** The host requests a guest to create an annotation. */
   | 'createAnnotation'
 
@@ -108,6 +116,13 @@ export type HostToSidebarEvent =
    */
   | 'setHighlightsVisible'
 
+
+  /**
+   * Chats have been toggled on/off.
+   */
+  | 'setChatsVisible'
+
+  
   /**
    * The host informs the sidebar that the sidebar has been opened.
    */

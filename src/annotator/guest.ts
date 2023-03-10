@@ -204,6 +204,7 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
 
     this._adder = new Adder(this.element, {
       onAnnotate: () => this.createAnnotation(),
+      onChat: () => this.createChat(),
       onHighlight: () => this.createAnnotation({ highlight: true }),
 
       // When the "Show" button is triggered, open the sidebar and select the
@@ -382,6 +383,8 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
     });
 
     this._hostRPC.on('createAnnotation', () => this.createAnnotation());
+
+    this._hostRPC.on('createChat', () => this.createChat());
 
     this._hostRPC.on('hoverAnnotations', (tags: string[]) =>
       this._hoverAnnotations(tags)
@@ -668,6 +671,52 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
 
     return annotation;
   }
+
+
+  /**
+   * Create a new chat that is associated with the selected region of
+   * the current document.
+   *
+   * @param options
+   * @return The new annotation
+   */
+  async createChat({}={}): Promise<AnnotationData> {
+    const ranges = this.selectedRanges;
+    this.selectedRanges = [];
+
+    const info = await this.getDocumentInfo();
+    const root = this.element;
+    const rangeSelectors = await Promise.all(
+      ranges.map(range => this._integration.describe(root, range))
+    );
+    const target = rangeSelectors.map(selectors => ({
+      source: info.uri,
+
+      // In the Hypothesis API the field containing the selectors is called
+      // `selector`, despite being a list.
+      selector: selectors,
+    }));
+
+    // using the same payload as annotation action to save time.
+    const chat: AnnotationData = {
+      uri: info.uri,
+      document: info.metadata,
+      target,
+      $highlight: false,
+      $cluster: 'user-annotations',
+      $tag: 'a:' + generateHexString(8),
+    };
+
+    this._sidebarRPC.call('createChat', chat);
+    this.anchor(chat);
+
+    // Removing the text selection triggers the `SelectionObserver` callback,
+    // which causes the adder to be removed after some delay.
+    removeTextSelection();
+    console.log(chat)
+    return chat;
+  }
+
 
   /**
    * Indicate in the sidebar that certain annotations are focused (ie. the

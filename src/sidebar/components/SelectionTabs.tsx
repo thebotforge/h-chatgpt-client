@@ -126,6 +126,17 @@ function SelectionTabs({
       )}
     >
       <div className="flex gap-x-6 theme-clean:ml-[15px]" role="tablist">
+
+      <Tab
+          count={annotationCount}
+          isWaitingToAnchor={isWaitingToAnchorAnnotations}
+          isSelected={selectedTab === 'annotation'}
+          label="Annotations"
+          onSelect={() => selectTab('chat')}
+        >
+          Chats
+        </Tab>
+
         <Tab
           count={annotationCount}
           isWaitingToAnchor={isWaitingToAnchorAnnotations}

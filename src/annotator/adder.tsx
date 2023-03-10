@@ -46,6 +46,8 @@ function nearestPositionedAncestor(el: Element): Element {
 }
 
 type AdderOptions = {
+  /** Callback invoked when "Chat" button is clicked */
+  onChat: () => void;
   /** Callback invoked when "Annotate" button is clicked */
   onAnnotate: () => void;
   /** Callback invoked when "Highlight" button is clicked */
@@ -70,6 +72,7 @@ export class Adder implements Destroyable {
   private _isVisible: boolean;
   private _arrowDirection: 'up' | 'down';
   private _onAnnotate: () => void;
+  private _onChat: () =>void;
   private _onHighlight: () => void;
   private _onShowAnnotations: (tags: string[]) => void;
   /** Annotation tags associated with the current selection. */
@@ -88,7 +91,7 @@ export class Adder implements Destroyable {
     this._outerContainer = document.createElement('hypothesis-adder');
     element.appendChild(this._outerContainer);
     this._shadowRoot = createShadowRoot(this._outerContainer);
-
+    console.log(options)
     // Set initial style
     Object.assign(this._outerContainer.style, {
       // take position out of layout flow initially
@@ -101,7 +104,7 @@ export class Adder implements Destroyable {
     this._isVisible = false;
     this._arrowDirection = 'up';
     this._annotationsForSelection = [];
-
+    this._onChat = options.onChat;
     this._onAnnotate = options.onAnnotate;
     this._onHighlight = options.onHighlight;
     this._onShowAnnotations = options.onShowAnnotations;
@@ -324,7 +327,12 @@ export class Adder implements Destroyable {
 
   private _render() {
     const handleCommand = (command: Command) => {
+      console.log(command)
       switch (command) {
+        case 'chat':
+          this._onChat();
+          this.hide();
+          break;
         case 'annotate':
           this._onAnnotate();
           this.hide();
