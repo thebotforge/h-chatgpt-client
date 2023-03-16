@@ -640,18 +640,17 @@ export class Sidebar {
     this._sidebarRPC.call('setHighlightsVisible', visible);
   }
 
-
-    /**
+  /**
    * Set whether highlights are visible in guest frames.
    *
    * @param {boolean} visible
    */
-    setChatsVisible(visible) {
-      this.toolbar.chatsVisible = visible;
-  
-      // Notify sidebar app of change which will in turn reflect state to guest frames.
-      this._sidebarRPC.call('setChatsVisible', visible);
-    }
+  setChatsVisible(visible) {
+    this.toolbar.chatsVisible = visible;
+
+    // Notify sidebar app of change which will in turn reflect state to guest frames.
+    this._sidebarRPC.call('setChatsVisible', visible);
+  }
 
   /**
    * Shows the sidebar's controls

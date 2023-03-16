@@ -12,7 +12,7 @@ import { createStoreModule, makeAction } from '../create-store';
 
 /**
  * @typedef {Record<string, boolean>} BooleanMap
- * @typedef {'Location'|'Newest'|'Oldest'} SortKey
+ * @typedef {'Location'|'Newest'|'Oldest'| 'Chat'} SortKey
  */
 
 /**
@@ -22,6 +22,7 @@ import { createStoreModule, makeAction } from '../create-store';
  */
 const TAB_SORTKEY_DEFAULT = {
   annotation: 'Location',
+  chat: 'Chat',
   note: 'Oldest',
   orphan: 'Location',
 };
@@ -65,7 +66,7 @@ function initialState(settings) {
     forcedVisible: {},
 
     /** @type {TabName} */
-    selectedTab: 'annotation',
+    selectedTab: 'chat',
 
     /**
      * Sort order for annotations.

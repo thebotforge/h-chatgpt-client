@@ -3,6 +3,7 @@ import { createStore } from './create-store';
 import { debugMiddleware } from './debug-middleware';
 import { activityModule } from './modules/activity';
 import { annotationsModule } from './modules/annotations';
+import { chatsModule } from './modules/chats';
 import { defaultsModule } from './modules/defaults';
 import { directLinkedModule } from './modules/direct-linked';
 import { draftsModule } from './modules/drafts';
@@ -55,6 +56,7 @@ export function createSidebarStore(settings) {
     sidebarPanelsModule,
     toastMessagesModule,
     viewerModule,
+    chatsModule,
   ]);
   return createStore(modules, [settings], middleware);
 }

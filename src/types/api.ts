@@ -299,3 +299,5 @@ export type SearchResponse = {
   /** Undocumented property that is populated if `_separate_replies` query param was specified. */
   replies?: Annotation[];
 };
+
+export type Chat = {};

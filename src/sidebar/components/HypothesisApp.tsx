@@ -13,6 +13,7 @@ import type { SessionService } from '../services/session';
 import type { ToastMessengerService } from '../services/toast-messenger';
 import { useSidebarStore } from '../store';
 import AnnotationView from './AnnotationView';
+import ChatView from './ChatView';
 import HelpPanel from './HelpPanel';
 import NotebookView from './NotebookView';
 import ProfileView from './ProfileView';
@@ -165,6 +166,7 @@ function HypothesisApp({
         {route && (
           <main>
             {route === 'annotation' && <AnnotationView onLogin={login} />}
+            {route === 'chat' && <ChatView />}
             {route === 'notebook' && <NotebookView />}
             {route === 'profile' && <ProfileView />}
             {route === 'stream' && <StreamView />}

@@ -197,8 +197,8 @@ export function bootHypothesisClient(doc, config) {
  */
 export function bootSidebarApp(doc, config) {
   // Preload `/api/` and `/api/links` API responses.
-  preloadURL(doc, 'fetch', config.apiUrl);
-  preloadURL(doc, 'fetch', config.apiUrl + 'links');
+  //preloadURL(doc, 'fetch', config.apiUrl);
+  //preloadURL(doc, 'fetch', config.apiUrl + 'links');
 
   const scripts = ['scripts/sidebar.bundle.js'];
   for (let path of scripts) {

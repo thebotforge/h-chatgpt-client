@@ -21,9 +21,12 @@ import { APIService } from './services/api';
 import { APIRoutesService } from './services/api-routes';
 import { AuthService } from './services/auth';
 import { AutosaveService } from './services/autosave';
+import { ChatsService } from './services/chats';
+import { ChatAPIService } from './services/chats-api';
 import { FrameSyncService } from './services/frame-sync';
 import { GroupsService } from './services/groups';
 import { LoadAnnotationsService } from './services/load-annotations';
+import { LoadChatsService } from './services/load-chats';
 import { LocalStorageService } from './services/local-storage';
 import { PersistedDefaultsService } from './services/persisted-defaults';
 import { RouterService } from './services/router';
@@ -124,6 +127,8 @@ function startApp(settings, appEl) {
   container
     .register('annotationsService', AnnotationsService)
     .register('annotationActivity', AnnotationActivityService)
+    .register('chatsService', ChatsService)
+    .register('chatApi', ChatAPIService)
     .register('api', APIService)
     .register('apiRoutes', APIRoutesService)
     .register('auth', AuthService)
@@ -131,6 +136,7 @@ function startApp(settings, appEl) {
     .register('frameSync', FrameSyncService)
     .register('groups', GroupsService)
     .register('loadAnnotationsService', LoadAnnotationsService)
+    .register('loadChatsService', LoadChatsService)
     .register('localStorage', LocalStorageService)
     .register('persistedDefaults', PersistedDefaultsService)
     .register('router', RouterService)

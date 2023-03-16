@@ -6,14 +6,10 @@ import {
   PointerUpIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import type { IconComponent } from '@hypothesis/frontend-shared/lib/types';
-
-import {
-  ChatIcon
-} from './../../images/assets.js'
-
 import classnames from 'classnames';
 
 import { useShortcut } from '../../shared/shortcut';
+import { ChatIcon } from './../../images/assets.js';
 
 /**
  * Render an inverted light-on-dark "pill" with the given `badgeCount`
@@ -262,7 +258,7 @@ export default function AdderToolbar({
           label="Chat"
           shortcut={chatShortcut}
         />
-        <ToolbarButton
+        {/* <ToolbarButton
           icon={AnnotateIcon}
           onClick={() => onCommand('annotate')}
           label="Annotatex"
@@ -273,7 +269,7 @@ export default function AdderToolbar({
           onClick={() => onCommand('highlight')}
           label="Highlight"
           shortcut={highlightShortcut}
-        />
+        /> */}
         {annotationCount > 0 && (
           <>
             <div

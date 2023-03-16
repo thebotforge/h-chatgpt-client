@@ -23,7 +23,13 @@ export class ToolbarController {
    * @param {ToolbarOptions} options
    */
   constructor(container, options) {
-    const { createAnnotation, createChat, setChatsVisible, setSidebarOpen, setHighlightsVisible } = options;
+    const {
+      createAnnotation,
+      createChat,
+      setChatsVisible,
+      setSidebarOpen,
+      setHighlightsVisible,
+    } = options;
 
     this._container = container;
 
@@ -113,10 +119,9 @@ export class ToolbarController {
     return this._highlightsVisible;
   }
 
-
   /**
-  * Update the toolbar to reflect whether highlights are currently visible.
-  */
+   * Update the toolbar to reflect whether highlights are currently visible.
+   */
   set chatsVisible(visible) {
     this._chatsVisible = visible;
     this.render();
@@ -125,7 +130,6 @@ export class ToolbarController {
   get chatsVisible() {
     return this._chatsVisible;
   }
-
 
   /**
    * Return the DOM element that toggles the sidebar's visibility.

@@ -76,7 +76,6 @@ export type GuestToSidebarEvent =
  * Events that the host sends to the guest
  */
 export type HostToGuestEvent =
-
   /** The host requests a guest to create an chat. */
   | 'createChat'
 
@@ -116,13 +115,11 @@ export type HostToSidebarEvent =
    */
   | 'setHighlightsVisible'
 
-
   /**
    * Chats have been toggled on/off.
    */
   | 'setChatsVisible'
 
-  
   /**
    * The host informs the sidebar that the sidebar has been opened.
    */
@@ -161,6 +158,11 @@ export type SidebarToGuestEvent =
    * The sidebar relays to the guest(s) to set the annotation highlights on/off.
    */
   | 'setHighlightsVisible'
+
+  /**
+   * The sidebar relays to the guest(s) to set the annotation highlights on/off.
+   */
+  | 'setChatsVisible'
 
   /**
    * Show a banner with information about the current content.
@@ -223,7 +225,15 @@ export type SidebarToHostEvent =
    * The sidebar requests the host to enable the "Show highlights" control.
    */
   | 'showHighlights'
+  /**
+   * The sidebar requests the host to enable the "Show chats" control.
+   */
+  | 'showChats'
 
+  /**
+   * The sidebar requests the host to enable the "Show chats" control.
+   */
+  | 'createChat'
   /**
    * The sidebar is asking the host to open the partner site profile page.
    * https://h.readthedocs.io/projects/client/en/latest/publishers/config/#cmdoption-arg-onprofilerequest

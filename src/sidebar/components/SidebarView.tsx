@@ -2,10 +2,16 @@ import { useEffect, useRef } from 'preact/hooks';
 
 import { tabForAnnotation } from '../helpers/tabs';
 import { withServices } from '../service-context';
+import { ChatsService } from '../services/chats';
 import type { FrameSyncService } from '../services/frame-sync';
 import type { LoadAnnotationsService } from '../services/load-annotations';
+import { LoadChatsService } from '../services/load-chats';
 import type { StreamerService } from '../services/streamer';
 import { useSidebarStore } from '../store';
+import Chat from './Chat/Chat';
+import ChatOpenApiKey from './Chat/ChatOpenApiKey';
+import ChatList from './ChatList';
+import ChatView from './ChatView';
 import FilterStatus from './FilterStatus';
 import LoggedOutMessage from './LoggedOutMessage';
 import LoginPromptPanel from './LoginPromptPanel';
@@ -21,6 +27,8 @@ export type SidebarViewProps = {
   // injected
   frameSync: FrameSyncService;
   loadAnnotationsService: LoadAnnotationsService;
+  loadChatsService: LoadChatsService;
+  chatsService: ChatsService;
   streamer: StreamerService;
 };
 
@@ -32,6 +40,8 @@ function SidebarView({
   onLogin,
   onSignUp,
   loadAnnotationsService,
+  //chatsService,
+  loadChatsService,
   streamer,
 }: SidebarViewProps) {
   const rootThread = useRootThread();
@@ -56,6 +66,8 @@ function SidebarView({
   const sidebarHasOpened = store.hasSidebarOpened();
   const userId = store.profile().userid;
 
+  const chats = store.getChats();
+
   // If, after loading completes, no `linkedAnnotation` object is present when
   // a `linkedAnnotationId` is set, that indicates an error
   const hasDirectLinkedAnnotationError =
@@ -68,7 +80,8 @@ function SidebarView({
 
   const showFilterStatus = !hasContentError;
   const showTabs = !hasContentError && !hasAppliedFilter;
-
+  const showChat = true;
+  const needsOpenApiKey = store.needsOpenApiKey();
   // Show a CTA to log in if successfully viewing a direct-linked annotation
   // and not logged in
   const showLoggedOutMessage =
@@ -105,7 +118,14 @@ function SidebarView({
         uris: searchUris,
       });
     }
-  }, [store, loadAnnotationsService, focusedGroupId, userId, searchUris]);
+  }, [
+    store,
+    // loadAnnotationsService,
+    loadChatsService,
+    focusedGroupId,
+    userId,
+    searchUris,
+  ]);
 
   // When a `linkedAnnotationAnchorTag` becomes available, scroll to it
   // and focus it
@@ -120,19 +140,19 @@ function SidebarView({
     }
   }, [directLinkedTab, frameSync, linkedAnnotation, store]);
 
-  // Connect to the streamer when the sidebar has opened or if user is logged in
-  const hasFetchedProfile = store.hasFetchedProfile();
-  useEffect(() => {
-    if (hasFetchedProfile && (sidebarHasOpened || isLoggedIn)) {
-      streamer.connect({ applyUpdatesImmediately: false });
-    }
-  }, [hasFetchedProfile, isLoggedIn, sidebarHasOpened, streamer]);
+  // // Connect to the streamer when the sidebar has opened or if user is logged in
+  // const hasFetchedProfile = store.hasFetchedProfile();
+  // useEffect(() => {
+  //   if (hasFetchedProfile && (sidebarHasOpened || isLoggedIn)) {
+  //     streamer.connect({ applyUpdatesImmediately: false });
+  //   }
+  // }, [hasFetchedProfile, isLoggedIn, sidebarHasOpened, streamer]);
 
   return (
     <div>
-      <h2 className="sr-only">Annotations</h2>
-      {showFilterStatus && <FilterStatus />}
-      <LoginPromptPanel onLogin={onLogin} onSignUp={onSignUp} />
+      <h2 className="sr-only">Chats</h2>
+      {/* {<FilterStatus />} */}
+      {/* <LoginPromptPanel onLogin={onLogin} onSignUp={onSignUp} /> */}
       {hasDirectLinkedAnnotationError && (
         <SidebarContentError
           errorType="annotation"
@@ -144,8 +164,13 @@ function SidebarView({
         <SidebarContentError errorType="group" onLoginRequest={onLogin} />
       )}
       {showTabs && <SelectionTabs isLoading={isLoading} />}
-      <ThreadList threads={rootThread.children} />
-      {showLoggedOutMessage && <LoggedOutMessage onLogin={onLogin} />}
+      {needsOpenApiKey && (
+        <ChatOpenApiKey onClick={key => store.createOpenAIApiKey(key)} />
+      )}
+      {showChat && <Chat chat={{ $tag: '' }} />}
+      {<ChatList chats={store.getChats()} />}
+      {/* <ThreadList threads={rootThread.children} /> */}
+      {/* {showLoggedOutMessage && <LoggedOutMessage onLogin={onLogin} />} */}
     </div>
   );
 }
@@ -153,5 +178,6 @@ function SidebarView({
 export default withServices(SidebarView, [
   'frameSync',
   'loadAnnotationsService',
+  'loadChatsService',
   'streamer',
 ]);

@@ -456,6 +456,10 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
       this.setHighlightsVisible(showHighlights, false /* notifyHost */);
     });
 
+    this._sidebarRPC.on('setChatsVisible', (showChats: boolean) => {
+      this.setChatsVisible(showChats, false /* notifyHost */);
+    });
+
     this._sidebarRPC.on('deleteAnnotation', (tag: string) => this.detach(tag));
 
     this._sidebarRPC.on('loadAnnotations', (annotations: AnnotationData[]) =>
@@ -672,7 +676,6 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
     return annotation;
   }
 
-
   /**
    * Create a new chat that is associated with the selected region of
    * the current document.
@@ -680,7 +683,7 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
    * @param options
    * @return The new annotation
    */
-  async createChat({}={}): Promise<AnnotationData> {
+  async createChat({} = {}): Promise<AnnotationData> {
     const ranges = this.selectedRanges;
     this.selectedRanges = [];
 
@@ -713,10 +716,9 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
     // Removing the text selection triggers the `SelectionObserver` callback,
     // which causes the adder to be removed after some delay.
     removeTextSelection();
-    console.log(chat)
+    console.log(chat);
     return chat;
   }
-
 
   /**
    * Indicate in the sidebar that certain annotations are focused (ie. the
@@ -827,6 +829,22 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
     if (notifyHost) {
       this._hostRPC.call('highlightsVisibleChanged', visible);
     }
+  }
+
+  /**
+   * Set whether highlights are visible in the document or not.
+   *
+   * @param visible
+   * @param notifyHost - Whether to notify the host frame about this
+   *   change. This should be true unless the request to change highlight
+   *   visibility is coming from the host frame.
+   */
+  setChatsVisible(visible: boolean, notifyHost = true) {
+    // setChatsVisible(this.element, visible);
+    // this._highlightsVisible = visible;
+    // if (notifyHost) {
+    //   this._hostRPC.call('highlightsVisibleChanged', visible);
+    // }
   }
 
   get highlightsVisible() {

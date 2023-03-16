@@ -102,7 +102,7 @@ function TopBar({
         )}
         data-testid="top-bar-content"
       >
-        {isSidebar ? <GroupList /> : <StreamSearchInput />}
+        {/* {isSidebar ? <GroupList /> : <StreamSearchInput />} */}
         <div className="grow flex items-center justify-end">
           {isSidebar && (
             <>
@@ -117,11 +117,11 @@ function TopBar({
                   }`}
                 />
               )}
-              <SearchInput
+              {/* <SearchInput
                 query={filterQuery || null}
                 onSearch={store.setFilterQuery}
-              />
-              <SortMenu />
+              /> */}
+              {/* <SortMenu /> */}
               {showSharePageButton && (
                 <IconButton
                   icon={ShareIcon}

@@ -72,7 +72,7 @@ export class Adder implements Destroyable {
   private _isVisible: boolean;
   private _arrowDirection: 'up' | 'down';
   private _onAnnotate: () => void;
-  private _onChat: () =>void;
+  private _onChat: () => void;
   private _onHighlight: () => void;
   private _onShowAnnotations: (tags: string[]) => void;
   /** Annotation tags associated with the current selection. */
@@ -91,7 +91,7 @@ export class Adder implements Destroyable {
     this._outerContainer = document.createElement('hypothesis-adder');
     element.appendChild(this._outerContainer);
     this._shadowRoot = createShadowRoot(this._outerContainer);
-    console.log(options)
+    console.log(options);
     // Set initial style
     Object.assign(this._outerContainer.style, {
       // take position out of layout flow initially
@@ -327,7 +327,7 @@ export class Adder implements Destroyable {
 
   private _render() {
     const handleCommand = (command: Command) => {
-      console.log(command)
+      console.log(command);
       switch (command) {
         case 'chat':
           this._onChat();

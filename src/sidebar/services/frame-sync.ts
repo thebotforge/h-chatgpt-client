@@ -24,6 +24,7 @@ import type { SidebarStore } from '../store';
 import type { Frame } from '../store/modules/frames';
 import { watch } from '../util/watch';
 import type { AnnotationsService } from './annotations';
+import { ChatsService } from './chats';
 
 /**
  * Return a minimal representation of an annotation that can be sent from the
@@ -98,6 +99,7 @@ function frameForAnnotation(frames: Frame[], ann: Annotation): Frame | null {
 export class FrameSyncService {
   private _annotationsService: AnnotationsService;
 
+  private _chatsService: ChatsService;
   /**
    * Map of guest frame ID to channel for communicating with guest.
    *
@@ -162,10 +164,12 @@ export class FrameSyncService {
   constructor(
     $window: Window,
     annotationsService: AnnotationsService,
+    chatsService: ChatsService,
     store: SidebarStore
   ) {
     this._window = $window;
     this._annotationsService = annotationsService;
+    this._chatsService = chatsService;
     this._store = store;
     this._portFinder = new PortFinder({
       hostFrame: this._window.parent,
@@ -374,32 +378,26 @@ export class FrameSyncService {
 
     // A new annotation, note or highlight was created in the frame
     guestRPC.on('createChat', (chat: AnnotationData) => {
-      // If user is not logged in, we can't really create a meaningful highlight
-      // or annotation. Instead, we need to open the sidebar, show an error,
-      // and delete the (unsaved) annotation so it gets un-selected in the
-      // target document
-      console.log('createChatEVent')
-      if (!this._store.isLoggedIn()) {
-        this._hostRPC.call('openSidebar');
-        this._store.openSidebarPanel('loginPrompt');
-        this._guestRPC.forEach(rpc => rpc.call('deleteAnnotation', chat.$tag));
-        return;
-      }
+      console.log('createChatEVent');
+
       this._inFrame.add(chat.$tag);
 
       // Open the sidebar so that the user can immediately edit the draft
-      // annotation.
+      // chat.
       if (!chat.$highlight) {
         this._hostRPC.call('openSidebar');
+        console.log('calling open sidebar');
       }
 
-      // Ensure that the highlight for the newly-created annotation is visible.
+      // Ensure that the highlight for the newly-created chat is visible.
       // Currently we only support a single, shared visibility state for all highlights
       // in all frames, so this will make all existing highlights visible too.
-      this._hostRPC.call('showHighlights');
+      this._hostRPC.call('showChats');
+
+      this._hostRPC.call('createChat');
 
       // Create the new annotation in the sidebar.
-      this._annotationsService.create(chat);
+      this._chatsService.create(chat);
     });
 
     // A new annotation, note or highlight was created in the frame

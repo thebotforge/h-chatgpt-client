@@ -92,7 +92,7 @@ export type SelectionTabProps = {
 };
 
 /**
- * Tabbed display of annotations and notes
+ * Tabbed display of annotations and notes and chats
  */
 function SelectionTabs({
   annotationsService,
@@ -109,6 +109,8 @@ function SelectionTabs({
   const selectTab = (tabId: TabName) => {
     store.clearSelection();
     store.selectTab(tabId);
+
+    console.log(`selected tab ${tabId}`);
   };
 
   const showAnnotationsUnavailableMessage =
@@ -126,18 +128,17 @@ function SelectionTabs({
       )}
     >
       <div className="flex gap-x-6 theme-clean:ml-[15px]" role="tablist">
-
-      <Tab
+        <Tab
           count={annotationCount}
           isWaitingToAnchor={isWaitingToAnchorAnnotations}
-          isSelected={selectedTab === 'annotation'}
-          label="Annotations"
+          isSelected={selectedTab === 'chat'}
+          label="Chats"
           onSelect={() => selectTab('chat')}
         >
           Chats
         </Tab>
 
-        <Tab
+        {/* <Tab
           count={annotationCount}
           isWaitingToAnchor={isWaitingToAnchorAnnotations}
           isSelected={selectedTab === 'annotation'}
@@ -154,7 +155,7 @@ function SelectionTabs({
           onSelect={() => selectTab('note')}
         >
           Page Notes
-        </Tab>
+        </Tab> */}
         {orphanCount > 0 && (
           <Tab
             count={orphanCount}

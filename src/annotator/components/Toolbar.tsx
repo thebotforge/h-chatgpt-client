@@ -9,17 +9,14 @@ import {
   NoteIcon,
   ShowIcon,
 } from '@hypothesis/frontend-shared/lib/next';
-
-import {
-  ChatIcon
-} from './../../images/assets.js'
-
 import type {
   IconComponent,
   PresentationalProps,
 } from '@hypothesis/frontend-shared/lib/types';
 import classnames from 'classnames';
 import type { JSX, RefObject } from 'preact';
+
+import { ChatIcon } from './../../images/assets.js';
 
 // TODO: ToolbarButton should be extracted as a shared design pattern or
 // component
@@ -77,7 +74,6 @@ export type ToolbarProps = {
   /** Callback for when "Create chat" button is clicked. */
   createChat: () => void;
 
-
   /** Are chats currently visible in the document? */
   showChats: boolean;
 
@@ -98,10 +94,8 @@ export type ToolbarProps = {
   /** Callback for the show/hide highlights button */
   toggleHighlights: () => void;
 
-
   /** Callback for the show/hide chat button */
   toggleChat: () => void;
-  
 
   /**
    * Callback for toggling the visibility of the sidebar when the show/hide
@@ -194,14 +188,13 @@ export default function Toolbar({
             {isSidebarOpen ? <CaretRightIcon /> : <CaretLeftIcon />}
           </ButtonBase>
           <div className="space-y-px-1.5 mt-px-2">
-
-          <ToolbarButton
+            <ToolbarButton
               title="Show chat"
               icon={ChatIcon}
               selected={showHighlights}
               onClick={toggleChat}
             />
-            <ToolbarButton
+            {/* <ToolbarButton
               title="Show highlights"
               icon={showHighlights ? ShowIcon : HideIcon}
               selected={showHighlights}
@@ -215,7 +208,7 @@ export default function Toolbar({
               }
               icon={newAnnotationType === 'note' ? NoteIcon : AnnotateIcon}
               onClick={createAnnotation}
-            />
+            /> */}
           </div>
           <StatusNotifier highlightsVisible={showHighlights} />
         </>
