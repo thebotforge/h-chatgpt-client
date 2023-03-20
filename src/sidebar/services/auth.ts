@@ -116,17 +116,16 @@ export class AuthService extends TinyEmitter {
    * Return a cached OAuthClient if available, or configure one and return it.
    */
   async _oauthClient() {
-    if (this._client) {
-      return this._client;
-    }
-
-    const links = await this._apiRoutes.links();
-    this._client = new OAuthClient({
-      clientId: this._settings.oauthClientId,
-      authorizationEndpoint: links['oauth.authorize'],
-      revokeEndpoint: links['oauth.revoke'],
-      tokenEndpoint: resolve('token', this._settings.apiUrl),
-    });
+    // if (this._client) {
+    //   return this._client;
+    // }
+    // const links = await this._apiRoutes.links();
+    // this._client = new OAuthClient({
+    //   clientId: this._settings.oauthClientId,
+    //   authorizationEndpoint: links['oauth.authorize'],
+    //   revokeEndpoint: links['oauth.revoke'],
+    //   tokenEndpoint: resolve('token', this._settings.apiUrl),
+    // });
     return this._client;
   }
 
@@ -135,10 +134,10 @@ export class AuthService extends TinyEmitter {
    * access token.
    */
   private async _exchangeAuthCodeForToken(code: string) {
-    const client = await this._oauthClient();
-    const tokenInfo = await client.exchangeAuthCode(code);
-    this._saveToken(tokenInfo);
-    return tokenInfo;
+    // const client = await this._oauthClient();
+    // const tokenInfo = await client.exchangeAuthCode(code);
+    // this._saveToken(tokenInfo);
+    // return tokenInfo;
   }
 
   /**
@@ -148,18 +147,18 @@ export class AuthService extends TinyEmitter {
    * configuration.
    */
   private async _exchangeGrantToken(grantToken: string) {
-    const client = await this._oauthClient();
-    try {
-      return await client.exchangeGrantToken(grantToken);
-    } catch (err) {
-      this._toastMessenger.error(
-        `Hypothesis login lost: You must reload the page to annotate.`,
-        {
-          autoDismiss: false,
-        }
-      );
-      throw err;
-    }
+    // const client = await this._oauthClient();
+    // try {
+    //   return await client.exchangeGrantToken(grantToken);
+    // } catch (err) {
+    //   this._toastMessenger.error(
+    //     `Hypothesis login lost: You must reload the page to annotate.`,
+    //     {
+    //       autoDismiss: false,
+    //     }
+    //   );
+    //   throw err;
+    // }
   }
 
   /**
@@ -190,140 +189,141 @@ export class AuthService extends TinyEmitter {
    * Persist access and refresh tokens for later reuse
    */
   private _saveToken(token: TokenInfo) {
+    debugger;
     this._localStorage.setObject(this._storageKey(), token);
   }
 
   /**
    * Exchange a refresh token for a new access token and refresh token pair
    */
-  private async _refreshAccessToken(
-    refreshToken: string,
-    options: RefreshOptions
-  ): Promise<TokenInfo | null> {
-    const client = await this._oauthClient();
+  // private async _refreshAccessToken(
+  //   refreshToken: string,
+  //   options: RefreshOptions
+  // ): Promise<TokenInfo | null> {
+  //   const client = await this._oauthClient();
 
-    let token;
-    try {
-      token = await client.refreshToken(refreshToken);
+  //   let token;
+  //   try {
+  //     token = await client.refreshToken(refreshToken);
 
-      // Sanity check that prevents an infinite loop. Mostly useful in
-      // tests.
-      if (Date.now() > token.expiresAt) {
-        /* istanbul ignore next */
-        throw new Error('Refreshed token expired in the past');
-      }
-    } catch {
-      // If refreshing the token fails, the user is simply logged out.
-      return null;
-    }
+  //     // Sanity check that prevents an infinite loop. Mostly useful in
+  //     // tests.
+  //     if (Date.now() > token.expiresAt) {
+  //       /* istanbul ignore next */
+  //       throw new Error('Refreshed token expired in the past');
+  //     }
+  //   } catch {
+  //     // If refreshing the token fails, the user is simply logged out.
+  //     return null;
+  //   }
 
-    if (options.persist) {
-      this._saveToken(token);
-    }
+  //   if (options.persist) {
+  //     this._saveToken(token);
+  //   }
 
-    return token;
-  }
+  //   return token;
+  // }
 
   /**
    * Retrieve an access token for use with the API
    */
-  async getAccessToken(): Promise<string | null> {
-    if (!this._tokenInfoPromise) {
-      // No access token is set: determine how to get one. This will depend on
-      // which type of login is being used
-      const grantToken = this._getGrantToken();
-      if (grantToken !== undefined) {
-        // The user is logged in through a publisher/embedder's site and
-        // a grant token has been included in service configuration
-        if (!grantToken) {
-          // Grant token is present but empty: this user is anonymous on the
-          // publisher/embedder website
-          this._tokenInfoPromise = Promise.resolve(null);
-        } else {
-          this._tokenInfoPromise = this._exchangeGrantToken(grantToken);
-        }
-      } else if (this._authCode) {
-        // User has authorized through pop-up window and we have an
-        // authorization code we can exchange for an access token
-        this._tokenInfoPromise = this._exchangeAuthCodeForToken(this._authCode);
-        this._authCode = null; // Consume the single-use auth code
-      } else {
-        // Attempt to retrieve stored token from previous session
-        this._tokenInfoPromise = Promise.resolve(this._loadToken());
-      }
-    }
+  // async getAccessToken(): Promise<string | null> {
+  //   if (!this._tokenInfoPromise) {
+  //     // No access token is set: determine how to get one. This will depend on
+  //     // which type of login is being used
+  //     const grantToken = this._getGrantToken();
+  //     if (grantToken !== undefined) {
+  //       // The user is logged in through a publisher/embedder's site and
+  //       // a grant token has been included in service configuration
+  //       if (!grantToken) {
+  //         // Grant token is present but empty: this user is anonymous on the
+  //         // publisher/embedder website
+  //         this._tokenInfoPromise = Promise.resolve(null);
+  //       } else {
+  //         this._tokenInfoPromise = this._exchangeGrantToken(grantToken);
+  //       }
+  //     } else if (this._authCode) {
+  //       // User has authorized through pop-up window and we have an
+  //       // authorization code we can exchange for an access token
+  //       this._tokenInfoPromise = this._exchangeAuthCodeForToken(this._authCode);
+  //       this._authCode = null; // Consume the single-use auth code
+  //     } else {
+  //       // Attempt to retrieve stored token from previous session
+  //       this._tokenInfoPromise = Promise.resolve(this._loadToken());
+  //     }
+  //   }
 
-    // Wait for the token to resolve. Ensure that it is valid and that
-    // it wasn't invalidated while it was being fetched. Refresh if needed.
+  // Wait for the token to resolve. Ensure that it is valid and that
+  // it wasn't invalidated while it was being fetched. Refresh if needed.
 
-    const origToken = this._tokenInfoPromise;
-    const token = await this._tokenInfoPromise;
+  // const origToken = this._tokenInfoPromise;
+  // const token = await this._tokenInfoPromise;
 
-    if (!token) {
-      // No token available. User will need to log in.
-      return null;
-    }
+  // if (!token) {
+  //   // No token available. User will need to log in.
+  //   return null;
+  // }
 
-    if (origToken !== this._tokenInfoPromise) {
-      // The token source was changed while waiting for the token to be fetched.
-      // This can happen for various reasons. We'll just need to try again.
-      return this.getAccessToken();
-    }
+  // if (origToken !== this._tokenInfoPromise) {
+  //   // The token source was changed while waiting for the token to be fetched.
+  //   // This can happen for various reasons. We'll just need to try again.
+  //   return this.getAccessToken();
+  // }
 
-    if (Date.now() > token.expiresAt) {
-      // Token has expired, so we need to fetch a new one.
-      const grantToken = this._getGrantToken();
-      this._tokenInfoPromise = this._refreshAccessToken(token.refreshToken, {
-        // Only persist tokens if automatic login is not being used.
-        persist: typeof grantToken === 'undefined',
-      });
-      return this.getAccessToken();
-    }
+  // if (Date.now() > token.expiresAt) {
+  //   // Token has expired, so we need to fetch a new one.
+  //   const grantToken = this._getGrantToken();
+  //   this._tokenInfoPromise = this._refreshAccessToken(token.refreshToken, {
+  //     // Only persist tokens if automatic login is not being used.
+  //     persist: typeof grantToken === 'undefined',
+  //   });
+  //   return this.getAccessToken();
+  // }
 
-    return token.accessToken;
-  }
-
-  /**
-   * Log in to the service using OAuth.
-   *
-   * Authorize through OAuthClient (this shows a pop-up window to the user).
-   * Store the resulting authorization code to exchange for an access token in
-   * the next API call ( {@see getAccessToken} )
-   */
-  async login() {
-    // Any async steps before the call to `client.authorize` must complete
-    // in less than ~1 second, otherwise the browser's popup blocker may block
-    // the popup.
-    //
-    // `oauthClient` is async in case it needs to fetch links from the API.
-    // This should already have happened by the time this function is called
-    // however, so it will just be returning a cached value.
-    const client = await this._oauthClient();
-    const authCode = await client.authorize(this._window);
-
-    // Save the auth code. It will be exchanged for an access token when the
-    // next API request is made.
-    this._authCode = authCode;
-    this._tokenInfoPromise = null;
-  }
-
-  /**
-   * Log out of the service (in the client only).
-   *
-   * This revokes and then forgets any OAuth credentials that the user has.
-   */
-  async logout() {
-    const [token, client] = await Promise.all([
-      this._tokenInfoPromise,
-      this._oauthClient(),
-    ]);
-
-    if (token) {
-      await client.revokeToken(token.accessToken);
-    }
-
-    this._tokenInfoPromise = null;
-
-    this._localStorage.removeItem(this._storageKey());
-  }
+  // return token.accessToken;
 }
+
+/**
+ * Log in to the service using OAuth.
+ *
+ * Authorize through OAuthClient (this shows a pop-up window to the user).
+ * Store the resulting authorization code to exchange for an access token in
+ * the next API call ( {@see getAccessToken} )
+ */
+// async login() {
+//   // Any async steps before the call to `client.authorize` must complete
+//   // in less than ~1 second, otherwise the browser's popup blocker may block
+//   // the popup.
+//   //
+//   // `oauthClient` is async in case it needs to fetch links from the API.
+//   // This should already have happened by the time this function is called
+//   // however, so it will just be returning a cached value.
+//   const client = await this._oauthClient();
+//   const authCode = await client.authorize(this._window);
+
+//   // Save the auth code. It will be exchanged for an access token when the
+//   // next API request is made.
+//   this._authCode = authCode;
+//   this._tokenInfoPromise = null;
+// }
+
+/**
+ * Log out of the service (in the client only).
+ *
+ * This revokes and then forgets any OAuth credentials that the user has.
+ */
+// async logout() {
+//   const [token, client] = await Promise.all([
+//     this._tokenInfoPromise,
+//     this._oauthClient(),
+//   ]);
+
+//   if (token) {
+//     await client.revokeToken(token.accessToken);
+//   }
+
+//   this._tokenInfoPromise = null;
+
+//   this._localStorage.removeItem(this._storageKey());
+// }
+//}

@@ -81,7 +81,7 @@ function setupApi(api, streamer) {
  * @inject
  */
 function setupRoute(groups, session, router) {
-  groups.load();
+  //groups.load();
   session.load();
   router.sync();
 }

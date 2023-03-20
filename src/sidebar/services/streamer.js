@@ -33,7 +33,7 @@ export class StreamerService {
     this._groups = groups;
     this._session = session;
     this._store = store;
-    this._websocketURL = apiRoutes.links().then(links => links.websocket);
+    this._websocketURL = ''; //apiRoutes.links().then(links => links.websocket);
 
     /** The randomly generated session ID */
     this.clientId = generateHexString(32);
@@ -184,7 +184,7 @@ export class StreamerService {
 
     let token;
     try {
-      token = await this._auth.getAccessToken();
+      token = null; //await this._auth.getAccessToken();
     } catch (err) {
       console.error('Failed to fetch token for WebSocket authentication', err);
       throw err;

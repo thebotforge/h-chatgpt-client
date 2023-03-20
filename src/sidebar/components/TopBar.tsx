@@ -7,6 +7,7 @@ import {
 } from '@hypothesis/frontend-shared/lib/next';
 import classnames from 'classnames';
 
+import { Logo } from '../../images/assets';
 import type { SidebarSettings } from '../../types/config';
 import { serviceConfig } from '../config/service-config';
 import { isThirdPartyService } from '../helpers/is-third-party-service';
@@ -104,6 +105,10 @@ function TopBar({
       >
         {/* {isSidebar ? <GroupList /> : <StreamSearchInput />} */}
         <div className="grow flex items-center justify-end">
+          <div className="grow flex justify-start">
+            {<Logo />}
+            Hypothechat
+          </div>
           {isSidebar && (
             <>
               {pendingUpdateCount > 0 && (

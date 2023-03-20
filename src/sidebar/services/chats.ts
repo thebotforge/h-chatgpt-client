@@ -10,6 +10,7 @@ import {
 import * as metadata from '../helpers/annotation-metadata';
 import { SidebarStore } from '../store';
 import { ChatAPIService } from './chats-api';
+import { LocalStorageService } from './local-storage';
 
 /**
  * @typedef {import('../../types/api').Annotation} Annotation
@@ -26,14 +27,24 @@ export class ChatsService {
   private _api: ChatAPIService;
   private _store: SidebarStore;
   private _chatService?: ChatAPIService;
+  private _localStorage: LocalStorageService;
 
   /**
    * @param {import('./chats-api').ChatAPIService} api
    * @param {import('../store').SidebarStore} store
    */
-  constructor(api: ChatAPIService, store: SidebarStore) {
+  constructor(
+    api: ChatAPIService,
+    store: SidebarStore,
+    localStorage: LocalStorageService
+  ) {
     this._api = api;
     this._store = store;
+    this._localStorage = localStorage;
+    const localKey = this._store.getDefault('openAIApiKey');
+    if (typeof localKey === 'string') {
+      this._store.createOpenAIApiKey(localKey);
+    }
   }
 
   /**
@@ -48,6 +59,7 @@ export class ChatsService {
     const annotation = this._initialize(annotationData, now);
     console.log(annotation.$tag);
     this._store.createAnnotation(annotation);
+    this._store.clearChat();
   }
 
   _initialize(annotationData: AnnotationData, now = new Date()) {
@@ -104,23 +116,20 @@ export class ChatsService {
 
     const newSystemMessage: Message = {
       id: generateHexString(8),
-      chatID: this._store.getCurrentChat().id,
+      chatID: this._store.getCurrentChat()?.id,
       timestamp: Date.now(),
       role: 'system',
       content: 'You are a helpful assistant and want to help with this text.',
       done: true,
     };
 
-    this._store.createChatMessage(
-      this._store.getCurrentChat(),
-      newSystemMessage
-    );
+    this._store.createChatMessage(newSystemMessage);
 
     //get all the values I need
 
     let newMessage: Message = {
       id: generateHexString(8),
-      chatID: this._store.getCurrentChat().id,
+      chatID: this._store.getCurrentChat()?.id,
       timestamp: Date.now(),
       role: 'user',
       content: `
@@ -132,7 +141,7 @@ export class ChatsService {
       `.trim(),
       done: true,
     };
-    this._store.createChatMessage(this._store.getCurrentChat(), newMessage);
+    this._store.createChatMessage(newMessage);
   }
 
   public async sendMessage() {
@@ -140,23 +149,31 @@ export class ChatsService {
     console.log('Message sent:', this._store.getCurrentChat());
     try {
       //check if current message has an id
-      if (this._store.getCurrentChat().id) {
+      if (
+        this._store.getCurrentChat() !== undefined &&
+        this._store.getCurrentChat()?.id &&
+        this._store.getCurrentChat()?.annotationTag ===
+          this._store.getCurrentAnnotation().$tag
+      ) {
         console.log('follow on chat');
 
         let newMessage: Message = {
           id: generateHexString(8),
-          chatID: this._store.getCurrentChat().id,
+          chatID: this._store.getCurrentChat()?.id,
           timestamp: Date.now(),
           role: 'user',
           content: `${this._store.getCurrentMessage()}`.trim(),
           done: true,
         };
-        this._store.createChatMessage(this._store.getCurrentChat(), newMessage);
+        this._store.createChatMessage(newMessage);
         await this.completeMessage();
+        this.persistChats();
       } else {
+        console.log('new chat');
         //if not then create a new chat
         await this.sendNewMessage();
         await this.completeMessage();
+        this.persistChats();
       }
     } catch (error) {
       console.error(error);
@@ -167,7 +184,7 @@ export class ChatsService {
     try {
       const request: ChatCompletionRequest = {
         model: 'gpt-3.5-turbo',
-        messages: this._store.getCurrentChat().messages?.map(getOpenAIMessage),
+        messages: this._store.getCurrentChat()?.messages?.map(getOpenAIMessage),
         n: 1,
       };
 
@@ -182,19 +199,41 @@ export class ChatsService {
       const cleanedRole = response['choices'][0]['message']['role'].trim();
       const responseMessage: Message = {
         id: generateHexString(8),
-        chatID: this._store.getCurrentChat().id,
+        chatID: this._store.getCurrentChat()?.id,
         timestamp: Date.now(),
         role: cleanedRole,
         content: cleanedMessage,
         done: true,
       };
-      this._store.createChatMessage(
-        this._store.getCurrentChat(),
-        responseMessage
-      );
+      this._store.createChatMessage(responseMessage);
+      this.persistChats();
     } catch (error) {
       console.log(`problem sending to service ${error}`);
+      const responseMessage: Message = {
+        id: generateHexString(8),
+        chatID: this._store.getCurrentChat()?.id,
+        timestamp: Date.now(),
+        role: 'assistant',
+        content:
+          '****************sorry I had a problem with the service*************',
+        done: true,
+      };
+      this._store.createChatMessage(responseMessage);
+      this.persistChats();
     }
+  }
+
+  persistChats() {
+    this._localStorage.setObject('hypothesis.ai.chats', this._store.getChats());
+  }
+  deleteChatMessage(id: string) {
+    this._store.deleteChatMessage(id);
+    this.persistChats();
+  }
+
+  deleteChat(id: string) {
+    this._store.deleteChat(id);
+    this.persistChats();
   }
 
   public getMessages() {

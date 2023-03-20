@@ -190,7 +190,8 @@ function isFetchingAnnotations(state) {
  * @param {State} state
  */
 function isLoading(state) {
-  return state.activeApiRequests > 0 || !state.hasFetchedAnnotations;
+  //return state.activeApiRequests > 0 || !state.hasFetchedAnnotations;
+  return state.activeApiRequests > 0;
 }
 
 /**

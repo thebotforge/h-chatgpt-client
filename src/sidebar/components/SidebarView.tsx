@@ -40,7 +40,7 @@ function SidebarView({
   onLogin,
   onSignUp,
   loadAnnotationsService,
-  //chatsService,
+  chatsService,
   loadChatsService,
   streamer,
 }: SidebarViewProps) {
@@ -140,13 +140,10 @@ function SidebarView({
     }
   }, [directLinkedTab, frameSync, linkedAnnotation, store]);
 
-  // // Connect to the streamer when the sidebar has opened or if user is logged in
-  // const hasFetchedProfile = store.hasFetchedProfile();
-  // useEffect(() => {
-  //   if (hasFetchedProfile && (sidebarHasOpened || isLoggedIn)) {
-  //     streamer.connect({ applyUpdatesImmediately: false });
-  //   }
-  // }, [hasFetchedProfile, isLoggedIn, sidebarHasOpened, streamer]);
+  // Connect to the streamer when the sidebar has opened or if user is logged in
+  useEffect(() => {
+    loadChatsService.load();
+  }, [sidebarHasOpened]);
 
   return (
     <div>
@@ -165,10 +162,15 @@ function SidebarView({
       )}
       {showTabs && <SelectionTabs isLoading={isLoading} />}
       {needsOpenApiKey && (
-        <ChatOpenApiKey onClick={key => store.createOpenAIApiKey(key)} />
+        <ChatOpenApiKey
+          onClick={key => {
+            store.createOpenAIApiKey(key);
+            store.setDefault('openAIApiKey', key);
+          }}
+        />
       )}
-      {showChat && <Chat chat={{ $tag: '' }} />}
-      {<ChatList chats={store.getChats()} />}
+      {showChat && <Chat chat={{}} />}
+      {<ChatList chatsService={chatsService} chats={store.getChats()} />}
       {/* <ThreadList threads={rootThread.children} /> */}
       {/* {showLoggedOutMessage && <LoggedOutMessage onLogin={onLogin} />} */}
     </div>
@@ -179,5 +181,6 @@ export default withServices(SidebarView, [
   'frameSync',
   'loadAnnotationsService',
   'loadChatsService',
+  'chatsService',
   'streamer',
 ]);

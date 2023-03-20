@@ -1,7 +1,5 @@
 import { ClientAnnotationData } from './shared';
 
-export type Chat = ClientAnnotationData & {};
-
 export interface ChatMessage {
   role: string;
   content: string;

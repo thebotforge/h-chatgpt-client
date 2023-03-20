@@ -174,7 +174,7 @@ export class AnnotationsService {
    * @param {SavedAnnotation} annotation
    */
   async delete(annotation) {
-    await this._api.annotation.delete({ id: annotation.id });
+    //await this._api.annotation.delete({ id: annotation.id });
     this._activity.reportActivity('delete', annotation);
     this._store.removeAnnotations([annotation]);
   }
@@ -185,7 +185,7 @@ export class AnnotationsService {
    * @param {SavedAnnotation} annotation
    */
   async flag(annotation) {
-    await this._api.annotation.flag({ id: annotation.id });
+    //await this._api.annotation.flag({ id: annotation.id });
     this._activity.reportActivity('flag', annotation);
     this._store.updateFlagStatus(annotation.id, true);
   }
@@ -224,13 +224,13 @@ export class AnnotationsService {
     const annotationWithChanges = this._applyDraftChanges(annotation);
 
     if (!metadata.isSaved(annotation)) {
-      saved = this._api.annotation.create({}, annotationWithChanges);
+      // saved = this._api.annotation.create({}, annotationWithChanges);
       eventType = 'create';
     } else {
-      saved = this._api.annotation.update(
-        { id: annotation.id },
-        annotationWithChanges
-      );
+      // saved = this._api.annotation.update(
+      //   { id: annotation.id },
+      //   annotationWithChanges
+      // );
       eventType = 'update';
     }
 
@@ -238,8 +238,8 @@ export class AnnotationsService {
     let savedAnnotation;
     this._store.annotationSaveStarted(annotation);
     try {
-      savedAnnotation = await saved;
-      this._activity.reportActivity(eventType, savedAnnotation);
+      //savedAnnotation = await saved;
+      //this._activity.reportActivity(eventType, savedAnnotation);
     } finally {
       this._store.annotationSaveFinished(annotation);
     }
@@ -248,8 +248,8 @@ export class AnnotationsService {
     // version.
     for (let [key, value] of Object.entries(annotation)) {
       if (key.startsWith('$')) {
-        const fields = /** @type {Record<string, any>} */ (savedAnnotation);
-        fields[key] = value;
+        //const fields = /** @type {Record<string, any>} */ (savedAnnotation);
+        //fields[key] = value;
       }
     }
 
@@ -257,7 +257,7 @@ export class AnnotationsService {
     this._store.removeDraft(annotation);
 
     // Add (or, in effect, update) the annotation to the store's collection
-    this._store.addAnnotations([savedAnnotation]);
-    return savedAnnotation;
+    // this._store.addAnnotations([savedAnnotation]);
+    // return savedAnnotation;
   }
 }

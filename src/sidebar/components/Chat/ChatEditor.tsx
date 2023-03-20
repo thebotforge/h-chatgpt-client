@@ -1,17 +1,24 @@
 import ModalNext from '@hypothesis/frontend-shared/lib/components/feedback/Modal.js';
-import { Button, Input, Spinner } from '@hypothesis/frontend-shared/lib/next';
+import {
+  Button,
+  IconButton,
+  Input,
+  Spinner,
+  TrashFilledIcon,
+} from '@hypothesis/frontend-shared/lib/next';
 import { useCallback, useState, useRef, useMemo } from 'preact/hooks';
+import { Chat } from '../../../types/chat';
 
+import { isOrphan, quote } from '../../helpers/annotation-metadata';
 import { withServices } from '../../service-context';
 import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
+import AnnotationQuote from '../Annotation/AnnotationQuote';
 import { PersonIcon, ChatbotIcon } from './../../../images/assets.js';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
 export type ChatEditorProps = {
-  // disabled?: boolean;
-  // chat:{};
   chatsService: ChatsService;
 };
 
@@ -19,20 +26,27 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
   const store = useSidebarStore();
   const [msg, setMsg] = useState('');
   const service = chatsService;
+
   const isEmpty = false; //!text && !tags.length;
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const currentChat = store.getCurrentChat();
+  const currentAnnotation = store.getCurrentAnnotation();
+
   const handleReset = () => {
-    inputRef.current!.value = '';
+    setMsg('');
   };
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
+    sendMessage();
+  };
 
+  const sendMessage = () => {
     if (!store.getCurrentAnnotation()) alert('select some text');
 
     service.sendMessage();
     console.log('talk to the ChatAPI');
-    //inputRef.current?.focus();
     handleReset();
   };
 
@@ -44,7 +58,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     if ((event.metaKey || event.ctrlKey) && key === 'Enter') {
       event.stopPropagation();
       event.preventDefault();
-      //TODO a chat call here
+      sendMessage();
     }
   };
 
@@ -67,8 +81,24 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     [store]
   );
 
-  const currentChat = store.getCurrentChat();
-  const currentAnnotation = store.getCurrentAnnotation();
+  const onDeleteMessage = (id: string | undefined) => {
+    //remove the message
+    if (id !== undefined) {
+      console.log(`remove ${id}`);
+      service.deleteChatMessage(id);
+    }
+  };
+
+
+  const showMessages = useCallback(() => {
+    return (
+      currentChat &&
+      currentChat.messages &&
+      currentChat.messages.length > 0 &&
+      store.getCurrentAnnotation().$tag === currentChat.annotationTag
+    );
+  },[store,currentChat]);
+
   const suggestions = useMemo(() => {
     const suggest = [
       'Explain this text',
@@ -88,7 +118,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
               onClick={() =>
                 handleTextFieldChange({ target: { textContent: suggestion } })
               }
-              class="inline-block rounded-full bg-gray-500 mr-2 mb-2 py-1 px-3 text-sm font-bold bg-gray-100 rounded-full xl shadow-md transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200 hover:shadow-lg"
+              class="inline-block rounded-full bg-gray-300 mr-2 mb-2 py-1 px-3 text-sm font-bold bg-gray-100 rounded-full xl transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
             >
               {suggestion}
             </button>
@@ -96,14 +126,12 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
         })}
       </div>
     );
-  }, [store.getCurrentChat().messages]);
+  }, [store.getCurrentChat()]);
   const messages = useMemo(() => {
-    console.log(store.getCurrentChat().messages);
-    if (currentChat && currentChat.messages) {
-      return currentChat.messages
-        .filter(message => message.role !== 'system')
+    if (showMessages()) {
+      return (currentChat?.messages ?? [])
+        .filter(message => message?.role !== 'system')
         .map((message, index) => {
-          // only add an id if itemPrefixId is passed
           const props = `chat-messages-${index}`;
 
           return (
@@ -113,18 +141,33 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
                 {message.role === 'assistant' && <ChatbotIcon />}
               </div>
               <div role="option">{message.content.trim()}</div>
+              <div>
+                <IconButton
+                  icon={TrashFilledIcon}
+                  title="Edit"
+                  onClick={() => onDeleteMessage(message.id)}
+                />
+              </div>
             </div>
           );
         });
     }
-  }, [store, currentChat.messages]);
+  }, [store, currentChat, currentAnnotation]);
 
   const header = useMemo(() => {
+    const annotationQuote =
+      store.getCurrentAnnotation() && store.getCurrentAnnotation().target
+        ? quote(store.getCurrentAnnotation())
+        : '';
     return (
       <div>
-        {store.getCurrentAnnotation().$tag
-          ? 'ask me a question'
-          : 'Try selecting some text to chat about'}
+        {store.getCurrentAnnotation() && (
+          <AnnotationQuote
+            quote={annotationQuote || ''}
+            isHovered={false}
+            isOrphan={isOrphan(store.getCurrentAnnotation())}
+          />
+        )}
       </div>
     );
   }, [currentAnnotation]);
@@ -134,9 +177,9 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
       <div class="flex flex-col">
         {header}
         {messages}
-        {
-          // store.getCurrentAnnotation().$tag && store.isLoading() && <Spinner size="md" />
-        }
+        {store.getCurrentAnnotation().$tag && store.isLoading() && (
+          <Spinner size="md" />
+        )}
         <div class="flex flex-row">
           <div class="p-4 w-3/4">
             <Input

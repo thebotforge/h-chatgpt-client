@@ -99,6 +99,7 @@ export class LocalStorageService {
    * @param {string} key
    */
   removeItem(key) {
+    debugger;
     this._storage.removeItem(key);
   }
 }

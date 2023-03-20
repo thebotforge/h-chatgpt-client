@@ -202,7 +202,7 @@ export class APIService {
    * @param {import('../store').SidebarStore} store
    */
   constructor(apiRoutes, auth, store) {
-    const links = apiRoutes.routes();
+    //const links = null //apiRoutes.routes();
 
     /**
      * Client session identifier included with requests. Used by the backend
@@ -215,13 +215,13 @@ export class APIService {
     const getClientId = () => this._clientId;
 
     /** @param {string} route */
-    const apiCall = route =>
-      createAPICall(links, route, {
-        getAccessToken: () => auth.getAccessToken(),
-        getClientId,
-        onRequestStarted: store.apiRequestStarted,
-        onRequestFinished: store.apiRequestFinished,
-      });
+    // const apiCall = route =>
+    //   // createAPICall(links, route, {
+    //   //   getAccessToken: () => auth.getAccessToken(),
+    //   //   getClientId,
+    //   //   onRequestStarted: store.apiRequestStarted,
+    //   //   onRequestFinished: store.apiRequestFinished,
+    //   // });
 
     // Define available API calls.
     //
@@ -237,34 +237,34 @@ export class APIService {
 
     /** @typedef {{ id: string }} IDParam */
 
-    this.search = /** @type {APICall<{}, void, AnnotationSearchResult>} */ (
-      apiCall('search')
-    );
-    this.annotation = {
-      create: /** @type {APICall<{}, Partial<Annotation>, Annotation>} */ (
-        apiCall('annotation.create')
-      ),
-      delete: /** @type {APICall<IDParam>} */ (apiCall('annotation.delete')),
-      get: /** @type {APICall<IDParam, void, Annotation>} */ (
-        apiCall('annotation.read')
-      ),
-      update: /** @type {APICall<IDParam, Partial<Annotation>, Annotation>} */ (
-        apiCall('annotation.update')
-      ),
-      flag: /** @type {APICall<IDParam>} */ (apiCall('annotation.flag')),
-      hide: /** @type {APICall<IDParam>} */ (apiCall('annotation.hide')),
-      unhide: /** @type {APICall<IDParam>} */ (apiCall('annotation.unhide')),
-    };
-    this.group = {
-      member: {
-        delete: /** @type {APICall<{ pubid: string, userid: string }>} */ (
-          apiCall('group.member.delete')
-        ),
-      },
-      read: /** @type {APICall<{ id: string, expand: string[] }, void, Group>} */ (
-        apiCall('group.read')
-      ),
-    };
+    // this.search = /** @type {APICall<{}, void, AnnotationSearchResult>} */ (
+    //   apiCall('search')
+    // );
+    // this.annotation = {
+    //   create: /** @type {APICall<{}, Partial<Annotation>, Annotation>} */ (
+    //     apiCall('annotation.create')
+    //   ),
+    //   delete: /** @type {APICall<IDParam>} */ (apiCall('annotation.delete')),
+    //   get: /** @type {APICall<IDParam, void, Annotation>} */ (
+    //     apiCall('annotation.read')
+    //   ),
+    //   update: /** @type {APICall<IDParam, Partial<Annotation>, Annotation>} */ (
+    //     apiCall('annotation.update')
+    //   ),
+    //   flag: /** @type {APICall<IDParam>} */ (apiCall('annotation.flag')),
+    //   hide: /** @type {APICall<IDParam>} */ (apiCall('annotation.hide')),
+    //   unhide: /** @type {APICall<IDParam>} */ (apiCall('annotation.unhide')),
+    // };
+    // this.group = {
+    //   member: {
+    //     delete: /** @type {APICall<{ pubid: string, userid: string }>} */ (
+    //       apiCall('group.member.delete')
+    //     ),
+    //   },
+    //   read: /** @type {APICall<{ id: string, expand: string[] }, void, Group>} */ (
+    //     apiCall('group.read')
+    //   ),
+    // };
 
     /**
      * @typedef ListGroupParams
@@ -273,24 +273,24 @@ export class APIService {
      * @prop {string[]} [expand]
      */
 
-    this.groups = {
-      list: /** @type {APICall<ListGroupParams, void, Group[]>} */ (
-        apiCall('groups.read')
-      ),
-    };
-    this.profile = {
-      groups: {
-        read: /** @type {APICall<{ expand: string[] }, void, Group[]>} */ (
-          apiCall('profile.groups.read')
-        ),
-      },
-      read: /** @type {APICall<{ authority?: string }, void, Profile>} */ (
-        apiCall('profile.read')
-      ),
-      update: /** @type {APICall<{}, Partial<Profile>, Profile>} */ (
-        apiCall('profile.update')
-      ),
-    };
+    // this.groups = {
+    //   list: /** @type {APICall<ListGroupParams, void, Group[]>} */ (
+    //     apiCall('groups.read')
+    //   ),
+    // };
+    // this.profile = {
+    //   groups: {
+    //     read: /** @type {APICall<{ expand: string[] }, void, Group[]>} */ (
+    //       apiCall('profile.groups.read')
+    //     ),
+    //   },
+    //   read: /** @type {APICall<{ authority?: string }, void, Profile>} */ (
+    //     apiCall('profile.read')
+    //   ),
+    //   update: /** @type {APICall<{}, Partial<Profile>, Profile>} */ (
+    //     apiCall('profile.update')
+    //   ),
+    // };
   }
 
   /**

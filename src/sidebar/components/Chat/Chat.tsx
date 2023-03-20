@@ -2,7 +2,7 @@ import { CardActions, Spinner } from '@hypothesis/frontend-shared/lib/next';
 import classnames from 'classnames';
 import { useMemo } from 'preact/hooks';
 
-import type { Chat as IChat } from '../../../types/chats-api';
+import type { Chat as IChat } from '../../../types/chat';
 import { isSaved, quote } from '../../helpers/annotation-metadata';
 import { withServices } from '../../service-context';
 import { ChatsService } from '../../services/chats';
@@ -67,13 +67,13 @@ function Chat({
   const store = useSidebarStore();
 
   //   const annotationQuote = quote(annotation);
-  const draft = store.getDraft(chat);
+  //const draft = store.getDraft(chat);
   //   const userid = store.profile().userid;
 
   //   const isHovered = store.isAnnotationHovered(annotation.$tag);
   const isSaving = false; //store.isSavingAnnotation(annotation);
 
-  const isEditing = !!draft && !isSaving;
+  //const isEditing = !!draft && !isSaving;
 
   const isChat = store.isChatting();
 

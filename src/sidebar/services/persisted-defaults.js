@@ -9,6 +9,7 @@ import { watch } from '../util/watch';
 const DEFAULT_KEYS = {
   annotationPrivacy: 'hypothesis.privacy',
   focusedGroup: 'hypothesis.groups.focus',
+  openAIApiKey: 'hypothesis.ai.key',
 };
 
 /**

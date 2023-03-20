@@ -17,6 +17,7 @@ import { createStoreModule, makeAction } from '../create-store';
 const initialState = {
   annotationPrivacy: /** @type {'private'|'shared'|null} */ (null),
   focusedGroup: /** @type {string|null} */ (null),
+  openAIApiKey: /** @type {'private'|'shared'|null} */ (null),
 };
 
 /**

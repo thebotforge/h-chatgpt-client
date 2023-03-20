@@ -9,10 +9,10 @@ export type State = typeof initialState;
 
 const initialState = {
   chatting: true,
-  chat: {},
+  chat: '',
   chats: [],
   annotation: {},
-  openAIApiKey: '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',
+  openAIApiKey: '',
   currentMessage: '',
 };
 
@@ -25,6 +25,10 @@ function isChatting(state: any) {
 }
 
 const reducers = {
+  CLEAR_CHAT(): Partial<State> {
+    return { chat: '' };
+  },
+
   /**
    * @param {State} state
    * @param {{ message: string }} action
@@ -42,6 +46,7 @@ const reducers = {
    */
   UPDATE_ANNOTATION(state: any, action: { annotation: AnnotationData }) {
     return {
+      ...state,
       annotation: action.annotation,
     };
   },
@@ -50,7 +55,7 @@ const reducers = {
    * @param {State} state
    * @param {{ openAIApiKey: string }} action
    */
-  UPDATE_KEY(state: any, action: { openAIApiKey: any }) {
+  UPDATE_KEY(state: any, action: { openAIApiKey: string }) {
     return {
       openAIApiKey: action.openAIApiKey,
     };
@@ -60,15 +65,73 @@ const reducers = {
    * @param {State} state
    * @param {{ action: string }} action
    */
-  ADD_CHAT_MESSAGE(
-    state: any,
-    action: { chat: Chat; message: Message }
-  ): Partial<State> {
-    const chat = state.chat;
+  ADD_CHAT_MESSAGE(state: any, action: { message: Message }): Partial<State> {
+    let currentChat = getCurrentChat(state);
+    let chat = {
+      ...currentChat,
+      messages: [...(currentChat?.messages || []), action.message],
+    };
+
+    const chatIndex = state.chats.findIndex(
+      (chat: Chat) => chat.id === state.chat
+    );
 
     return {
       ...state,
-      chat: { ...chat, messages: [...chat.messages, action.message] },
+      chats: [
+        ...state.chats.slice(0, chatIndex),
+        chat,
+        ...state.chats.slice(chatIndex + 1),
+      ],
+    };
+  },
+
+  /**
+   * @param {State} state
+   * @param {{ action: string }} action
+   */
+  DELETE_CHAT_MESSAGE(state: any, action: { id: string }): Partial<State> {
+    // Deep copy the state to avoid directly modifying the original state
+    const chats = JSON.parse(JSON.stringify(state.chats));
+
+    // Loop through the chats
+    for (const chat of chats) {
+      // Find the index of the message with the given ID in the current chat's messages array
+      const messageIndex = chat.messages.findIndex(
+        (message: Message) => message.id === action.id
+      );
+
+      // If a message with the given ID is found, remove it from the messages array
+      if (messageIndex !== -1) {
+        chat.messages.splice(messageIndex, 1);
+        break; // Break the loop as the message has been found and deleted
+      }
+    }
+
+    return {
+      ...state,
+      chats,
+    };
+  },
+
+  /**
+   * @param {State} state
+   * @param {{ action: string }} action
+   */
+  DELETE_CHAT(state: any, action: { id: string }): Partial<State> {
+    // Deep copy the state to avoid directly modifying the original state
+    const chats = JSON.parse(JSON.stringify(state.chats));
+
+    const messageIndex = chats.findIndex((chat: Chat) => chat.id === action.id);
+
+    // If a message with the given ID is found, remove it from the messages array
+    if (messageIndex !== -1) {
+      chats.splice(messageIndex, 1);
+    }
+
+    return {
+      ...state,
+      chats,
     };
   },
 
@@ -88,19 +151,23 @@ const reducers = {
       chats = [...state.chats, action.chat];
     } else {
       // Chat found, update it in the chats array
-      chats[chatIndex] = action.chat;
+      chats = [
+        ...state.chats.slice(0, chatIndex),
+        action.chat,
+        ...state.chats.slice(chatIndex + 1),
+      ];
     }
 
     return {
       ...state,
-      chat: action.chat,
+      chat: action.chat.id,
       chats: chats,
     };
   },
 };
 
-function createChatMessage(chat: Chat, message: Message) {
-  return makeAction(reducers, 'ADD_CHAT_MESSAGE', { chat, message });
+function createChatMessage(message: Message) {
+  return makeAction(reducers, 'ADD_CHAT_MESSAGE', { message });
 }
 
 function updateUserMessage(message: any) {
@@ -125,16 +192,6 @@ function updateChat(chat: Chat) {
 }
 
 /**
- * Update
- *
- * @param {ChatID} chat
- * @param {ChatChanges} changes
- */
-function addChat(chat: Chat) {
-  return makeAction(reducers, 'UPDATE_CHAT', { chat });
-}
-
-/**
  * Create the annotation
  *
  * @param {AnnotationID} annotation
@@ -154,15 +211,13 @@ function createOpenAIApiKey(openAIApiKey: string) {
 }
 
 /**
- * get the current chats
+ * get the current chat
  */
-function getCurrentChat(state: State): Chat {
-  return state.chat;
+
+function getCurrentChat(state: State) {
+  return findByID(state.chats, state.chat);
 }
 
-/**
- * get the current chats
- */
 function getCurrentAnnotation(state: State): any {
   return state.annotation;
 }
@@ -173,6 +228,18 @@ function getOpenAIApiKey(state: State): any {
 
 function getCurrentMessage(state: State): any {
   return state.currentMessage;
+}
+
+function deleteChatMessage(id: string) {
+  return makeAction(reducers, 'DELETE_CHAT_MESSAGE', { id: id });
+}
+function deleteChat(id: string) {
+  return makeAction(reducers, 'DELETE_CHAT', { id: id });
+}
+
+/** Set the currently displayed chats to the empty set. */
+function clearChat() {
+  return makeAction(reducers, 'CLEAR_CHAT', undefined);
 }
 
 /**
@@ -200,9 +267,12 @@ export const chatsModule = createStoreModule(initialState, {
   actionCreators: {
     updateUserMessage,
     updateChat,
+    clearChat,
     createAnnotation,
     createOpenAIApiKey,
     createChatMessage,
+    deleteChatMessage,
+    deleteChat,
   },
 
   selectors: {

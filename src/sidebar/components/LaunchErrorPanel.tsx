@@ -12,6 +12,7 @@ export type LaunchErrorPanelProps = {
  * normally available to UI components in the client.
  */
 export default function LaunchErrorPanel({ error }: LaunchErrorPanelProps) {
+  debugger;
   return (
     <div
       className={classnames(
