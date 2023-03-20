@@ -105,7 +105,7 @@ export class ChatsService {
 
     const newChatData = {
       id: generateHexString(8),
-      annotationTag: annotation.$tag,
+      annotation: annotation,
       title: `Chat about: ${title}`,
       messages: [],
       created: new Date().toISOString(),
@@ -152,7 +152,7 @@ export class ChatsService {
       if (
         this._store.getCurrentChat() !== undefined &&
         this._store.getCurrentChat()?.id &&
-        this._store.getCurrentChat()?.annotationTag ===
+        this._store.getCurrentChat()?.annotation?.$tag ===
           this._store.getCurrentAnnotation().$tag
       ) {
         console.log('follow on chat');

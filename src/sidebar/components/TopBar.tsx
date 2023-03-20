@@ -106,8 +106,16 @@ function TopBar({
         {/* {isSidebar ? <GroupList /> : <StreamSearchInput />} */}
         <div className="grow flex items-center justify-end">
           <div className="grow flex justify-start">
-            {<Logo />}
-            Hypothechat
+            {
+              <span class="shrink-0 flex items-center gap-x-1 text-md text-color-text font-bold">
+                <img
+                  class="relative top-[1px] w-4 h-4"
+                  src="https://hypothes.is/organizations/__default__/logo"
+                  alt="Hypothesis"
+                />
+                Hypothechat
+              </span>
+            }
           </div>
           {isSidebar && (
             <>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 
 import { tabForAnnotation } from '../helpers/tabs';
 import { withServices } from '../service-context';
@@ -19,6 +19,7 @@ import SelectionTabs from './SelectionTabs';
 import SidebarContentError from './SidebarContentError';
 import ThreadList from './ThreadList';
 import { useRootThread } from './hooks/use-root-thread';
+import ModalNext from '@hypothesis/frontend-shared/lib/components/feedback/Modal';
 
 export type SidebarViewProps = {
   onLogin: () => void;
@@ -145,11 +146,10 @@ function SidebarView({
     loadChatsService.load();
   }, [sidebarHasOpened]);
 
+
+
   return (
     <div>
-      <h2 className="sr-only">Chats</h2>
-      {/* {<FilterStatus />} */}
-      {/* <LoginPromptPanel onLogin={onLogin} onSignUp={onSignUp} /> */}
       {hasDirectLinkedAnnotationError && (
         <SidebarContentError
           errorType="annotation"
@@ -169,9 +169,11 @@ function SidebarView({
           }}
         />
       )}
-      {showChat && <Chat chat={{}} />}
-      {<ChatList chatsService={chatsService} chats={store.getChats()} />}
-      {/* <ThreadList threads={rootThread.children} /> */}
+      <div class={'bg-white p-3'}>
+        {showChat && <Chat chat={{}} />}
+        {<ChatList chatsService={chatsService} chats={store.getChats()} />}
+      </div>
+
       {/* {showLoggedOutMessage && <LoggedOutMessage onLogin={onLogin} />} */}
     </div>
   );

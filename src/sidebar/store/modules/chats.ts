@@ -1,7 +1,7 @@
 import { AnnotationData } from '../../../types/annotator';
 import { Chat, Message } from '../../../types/chat';
 import { createStoreModule, makeAction } from '../create-store';
-
+import { createSelector } from 'reselect';
 /**
  * @typedef {import('../../../types/config').SidebarSettings} SidebarSettings
  */
@@ -145,7 +145,7 @@ const reducers = {
       (chat: Chat) => chat.id === action.chat.id
     );
     let chats = state.chats;
-
+    let annotation = action.chat.annotation;
     if (chatIndex === -1) {
       // Chat not found, add it to the chats array
       chats = [...state.chats, action.chat];
@@ -162,6 +162,7 @@ const reducers = {
       ...state,
       chat: action.chat.id,
       chats: chats,
+      annotation: annotation
     };
   },
 };
@@ -230,6 +231,11 @@ function getCurrentMessage(state: State): any {
   return state.currentMessage;
 }
 
+function chatCount(state: State): string {
+  return state.chats.length.toString();
+}
+
+
 function deleteChatMessage(id: string) {
   return makeAction(reducers, 'DELETE_CHAT_MESSAGE', { id: id });
 }
@@ -241,6 +247,8 @@ function deleteChat(id: string) {
 function clearChat() {
   return makeAction(reducers, 'CLEAR_CHAT', undefined);
 }
+
+
 
 /**
  * Return true when any activity is happening in the app that needs to complete
@@ -284,5 +292,6 @@ export const chatsModule = createStoreModule(initialState, {
     getCurrentMessage,
     needsOpenApiKey,
     findChatByID,
+    chatCount,
   },
 });

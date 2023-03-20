@@ -8,6 +8,7 @@ import {
 } from '@hypothesis/frontend-shared/lib/next';
 import classnames from 'classnames';
 import type { ComponentChildren } from 'preact';
+import { useMemo } from 'preact/hooks';
 
 import type { SidebarSettings } from '../../types/config';
 import type { TabName } from '../../types/sidebar';
@@ -105,14 +106,14 @@ function SelectionTabs({
   const annotationCount = store.annotationCount();
   const orphanCount = store.orphanCount();
   const isWaitingToAnchorAnnotations = store.isWaitingToAnchorAnnotations();
-
+  const chatCount = store.chatCount();
   const selectTab = (tabId: TabName) => {
     store.clearSelection();
     store.selectTab(tabId);
 
     console.log(`selected tab ${tabId}`);
   };
-
+  const chatLabel = `Chats ${chatCount}`
   const showAnnotationsUnavailableMessage =
     selectedTab === 'annotation' &&
     annotationCount === 0 &&
@@ -132,10 +133,10 @@ function SelectionTabs({
           count={annotationCount}
           isWaitingToAnchor={isWaitingToAnchorAnnotations}
           isSelected={selectedTab === 'chat'}
-          label="Chats"
+          label={chatLabel}
           onSelect={() => selectTab('chat')}
         >
-          Chats
+          {chatLabel}
         </Tab>
 
         {/* <Tab

@@ -255,7 +255,7 @@ export default function AdderToolbar({
         <ToolbarButton
           icon={ChatIcon}
           onClick={() => onCommand('chat')}
-          label="Chat"
+          label="AI Chat"
           shortcut={chatShortcut}
         />
         {/* <ToolbarButton

@@ -1,3 +1,4 @@
+import { AnnotationData } from './annotator';
 import { ChatMessage } from './chats-api';
 
 export interface Parameters {
@@ -42,7 +43,8 @@ export interface Chat {
   messages?: Message[];
   created?: string;
   updated?: string;
-  annotationTag?: string;
+  annotation?: AnnotationData;
+  editing?:boolean
 }
 
 export interface RootState {

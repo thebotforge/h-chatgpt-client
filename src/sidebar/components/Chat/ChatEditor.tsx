@@ -7,14 +7,16 @@ import {
   TrashFilledIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import { useCallback, useState, useRef, useMemo } from 'preact/hooks';
-import { Chat } from '../../../types/chat';
 
+import { Chat } from '../../../types/chat';
 import { isOrphan, quote } from '../../helpers/annotation-metadata';
 import { withServices } from '../../service-context';
 import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
+import AnnotationBody from '../Annotation/AnnotationBody';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
 import { PersonIcon, ChatbotIcon } from './../../../images/assets.js';
+import ChatMessage from './ChatMessage';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
@@ -55,7 +57,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     if (isEmpty) {
       return;
     }
-    if ((event.metaKey || event.ctrlKey) && key === 'Enter') {
+    if (key === 'Enter') {
       event.stopPropagation();
       event.preventDefault();
       sendMessage();
@@ -89,36 +91,25 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     }
   };
 
-
   const showMessages = useCallback(() => {
     return (
-      currentChat &&
-      currentChat.messages &&
-      currentChat.messages.length > 0 &&
-      store.getCurrentAnnotation().$tag === currentChat.annotationTag
+      currentChat && currentChat.messages && currentChat.messages.length > 0
+      //&& store.getCurrentAnnotation().$tag === currentChat.annotationTag
     );
-  },[store,currentChat]);
+  }, [store, currentChat]);
 
   const suggestions = useMemo(() => {
-    const suggest = [
-      'Explain this text',
-      'Summarize this text',
-      'Translate this text',
-      'Provide a detailed point by point summary of this text',
-      'Explain this text at grad school level',
-      'Explain this text at High school level',
-      'Explain this text at College level',
-    ];
+    const suggest = ['Explain', 'Summarize', 'Translate'];
 
     return (
-      <div>
+      <div class={'flex flex-row'}>
         {suggest.map(suggestion => {
           return (
             <button
               onClick={() =>
                 handleTextFieldChange({ target: { textContent: suggestion } })
               }
-              class="inline-block rounded-full bg-gray-300 mr-2 mb-2 py-1 px-3 text-sm font-bold bg-gray-100 rounded-full xl transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+              class="inline-block bg-gray-200 mr-2 mb-2 py-1 px-3 text-sm font-bold bg-gray-100 transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
             >
               {suggestion}
             </button>
@@ -133,22 +124,8 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
         .filter(message => message?.role !== 'system')
         .map((message, index) => {
           const props = `chat-messages-${index}`;
-
           return (
-            <div aria-label={props} class="flex flex-row">
-              <div>
-                {message.role === 'user' && <PersonIcon />}
-                {message.role === 'assistant' && <ChatbotIcon />}
-              </div>
-              <div role="option">{message.content.trim()}</div>
-              <div>
-                <IconButton
-                  icon={TrashFilledIcon}
-                  title="Edit"
-                  onClick={() => onDeleteMessage(message.id)}
-                />
-              </div>
-            </div>
+            <ChatMessage message={message} onDeleteMessage={onDeleteMessage} />
           );
         });
     }
@@ -168,6 +145,11 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
             isOrphan={isOrphan(store.getCurrentAnnotation())}
           />
         )}
+
+        {store.getCurrentAnnotation() &&
+          store.getCurrentAnnotation().target && (
+            <AnnotationBody annotation={store.getCurrentAnnotation()} />
+          )}
       </div>
     );
   }, [currentAnnotation]);
@@ -180,26 +162,32 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
         {store.getCurrentAnnotation().$tag && store.isLoading() && (
           <Spinner size="md" />
         )}
-        <div class="flex flex-row">
-          <div class="p-4 w-3/4">
-            <Input
-              ref={inputRef}
-              type="text"
-              placeholder={'Ask a question about the text here...'}
-              name="message"
-              value={msg}
-              onChange={onChange}
-              onKeyDown={onKeyDown}
-            />
-          </div>
-          <div class="p-4 w-1/4">
-            <Button type="submit" onClick={handleSubmit}>
-              Chat
-            </Button>
-          </div>
-        </div>
+        {store.getCurrentAnnotation() &&
+          store.getCurrentAnnotation().target && (
+            <>
+              <div class="flex flex-row">
+                <div class="p-4 w-3/4">
+                  <Input
+                    ref={inputRef}
+                    type="text"
+                    placeholder={'Add a custom prompt'}
+                    name="message"
+                    value={msg}
+                    onChange={onChange}
+                    onKeyDown={onKeyDown}
+                    class="bg-gray-100 border border-solid border-gray-400 rounded"
+                  />
+                </div>
+                <div class="p-4 w-1/4">
+                  <Button type="submit" onClick={handleSubmit}>
+                    Chat
+                  </Button>
+                </div>
+              </div>
+              <div>{suggestions}</div>
+            </>
+          )}
       </div>
-      <div>{suggestions}</div>
     </>
   );
 }
