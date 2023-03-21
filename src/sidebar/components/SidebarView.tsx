@@ -1,3 +1,4 @@
+import ModalNext from '@hypothesis/frontend-shared/lib/components/feedback/Modal';
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 
 import { tabForAnnotation } from '../helpers/tabs';
@@ -19,7 +20,6 @@ import SelectionTabs from './SelectionTabs';
 import SidebarContentError from './SidebarContentError';
 import ThreadList from './ThreadList';
 import { useRootThread } from './hooks/use-root-thread';
-import ModalNext from '@hypothesis/frontend-shared/lib/components/feedback/Modal';
 
 export type SidebarViewProps = {
   onLogin: () => void;
@@ -145,8 +145,6 @@ function SidebarView({
   useEffect(() => {
     loadChatsService.load();
   }, [sidebarHasOpened]);
-
-
 
   return (
     <div>

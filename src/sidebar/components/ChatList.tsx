@@ -10,7 +10,6 @@ import classNames from 'classnames';
 import { h, FunctionalComponent } from 'preact';
 import { useMemo, useState } from 'preact/hooks';
 
-import { ChatIcon } from '../../images/assets';
 import { Chat, Message } from '../../types/chat';
 import { isOrphan, quote } from '../helpers/annotation-metadata';
 import { ChatsService } from '../services/chats';
@@ -63,7 +62,6 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   chats,
   chatsService,
 }) => {
-
   const store = useSidebarStore();
   store.getChats();
   const onEdit = (id: string | undefined) => {
@@ -85,13 +83,26 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
     }
   };
 
+  const onDeleteMessage = (id: string | undefined) => {
+    //remove the message
+    if (id !== undefined) {
+      console.log(`remove ${id}`);
+      chatsService.deleteChatMessage(id);
+    }
+  };
+
   const displayChats = useMemo(() => {
     if (store.getChats()) {
       return store.getChats().map((chat, index) => {
         const props = `chats-${index}`;
 
         return (
-          <ChatCard chat={chat} onDeleteChat={onDeleteChat} onEdit={onEdit} />
+          <ChatCard
+            chat={chat}
+            onDeleteMessage={onDeleteMessage}
+            onDeleteChat={onDeleteChat}
+            onEdit={onEdit}
+          />
         );
       });
     }

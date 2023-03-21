@@ -9,7 +9,7 @@ import type { IconComponent } from '@hypothesis/frontend-shared/lib/types';
 import classnames from 'classnames';
 
 import { useShortcut } from '../../shared/shortcut';
-import { ChatbotIcon, ChatIcon } from './../../images/assets.js';
+import { ChatbotIcon } from './../../images/assets.js';
 
 /**
  * Render an inverted light-on-dark "pill" with the given `badgeCount`

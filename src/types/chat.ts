@@ -44,7 +44,7 @@ export interface Chat {
   created?: string | undefined;
   updated?: string;
   annotation?: AnnotationData;
-  editing?:boolean
+  editing?: boolean;
 }
 
 export interface RootState {

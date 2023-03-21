@@ -113,7 +113,7 @@ function SelectionTabs({
 
     console.log(`selected tab ${tabId}`);
   };
-  
+
   const showAnnotationsUnavailableMessage =
     selectedTab === 'annotation' &&
     annotationCount === 0 &&
@@ -123,11 +123,15 @@ function SelectionTabs({
 
   const chatLabel = useMemo(() => {
     return (
-      <div>Chats <span class="relative bottom-[3px] left-[2px] text-[10px]">{chatCount}</span></div>
-    )
-},[chatCount])
+      <div>
+        Chats{' '}
+        <span class="relative bottom-[3px] left-[2px] text-[10px]">
+          {chatCount}
+        </span>
+      </div>
+    );
+  }, [chatCount]);
 
-  
   return (
     <div
       className={classnames(

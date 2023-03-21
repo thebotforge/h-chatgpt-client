@@ -16,8 +16,6 @@ import type {
 import classnames from 'classnames';
 import type { JSX, RefObject } from 'preact';
 
-
-
 // TODO: ToolbarButton should be extracted as a shared design pattern or
 // component
 type ToolbarButtonProps = PresentationalProps &
