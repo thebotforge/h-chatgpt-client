@@ -41,7 +41,7 @@ export interface Chat {
   id?: string;
   title?: string | null;
   messages?: Message[];
-  created?: string;
+  created?: string | undefined;
   updated?: string;
   annotation?: AnnotationData;
   editing?:boolean

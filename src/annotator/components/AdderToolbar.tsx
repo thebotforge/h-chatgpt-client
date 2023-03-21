@@ -9,7 +9,7 @@ import type { IconComponent } from '@hypothesis/frontend-shared/lib/types';
 import classnames from 'classnames';
 
 import { useShortcut } from '../../shared/shortcut';
-import { ChatIcon } from './../../images/assets.js';
+import { ChatbotIcon, ChatIcon } from './../../images/assets.js';
 
 /**
  * Render an inverted light-on-dark "pill" with the given `badgeCount`
@@ -253,7 +253,7 @@ export default function AdderToolbar({
         )}
       >
         <ToolbarButton
-          icon={ChatIcon}
+          icon={ChatbotIcon}
           onClick={() => onCommand('chat')}
           label="AI Chat"
           shortcut={chatShortcut}

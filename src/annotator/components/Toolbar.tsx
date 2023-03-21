@@ -16,7 +16,7 @@ import type {
 import classnames from 'classnames';
 import type { JSX, RefObject } from 'preact';
 
-import { ChatIcon } from './../../images/assets.js';
+
 
 // TODO: ToolbarButton should be extracted as a shared design pattern or
 // component
@@ -190,7 +190,7 @@ export default function Toolbar({
           <div className="space-y-px-1.5 mt-px-2">
             <ToolbarButton
               title="Show chat"
-              icon={ChatIcon}
+              icon={showHighlights ? ShowIcon : HideIcon}
               selected={showHighlights}
               onClick={toggleChat}
             />
