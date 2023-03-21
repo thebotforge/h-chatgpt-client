@@ -1,6 +1,12 @@
 import { AnnotationData } from './annotator';
 import { ChatMessage } from './chats-api';
 
+export interface Usage {
+  completion_tokens: number;
+  prompt_tokens: number;
+  total_tokens: number;
+}
+
 export interface Parameters {
   temperature: number;
   apiKey?: string;
@@ -16,6 +22,7 @@ export interface Message {
   content: string;
   parameters?: Parameters;
   done?: boolean;
+  usage?: Usage;
 }
 
 export interface UserSubmittedMessage {

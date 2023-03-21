@@ -16,7 +16,6 @@ import { ChatsService } from '../services/chats';
 import { useSidebarStore } from '../store';
 import AnnotationQuote from './Annotation/AnnotationQuote';
 import ChatCard from './Chat/ChatCard';
-import ChatMessage from './Chat/ChatMessage';
 import Excerpt from './Excerpt';
 
 type ToggleMessagesButtonProps = {
@@ -78,7 +77,6 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   const onDeleteChat = (id: string | undefined) => {
     //remove the message
     if (id !== undefined) {
-      console.log(`remove ${id}`);
       chatsService.deleteChat(id);
     }
   };
@@ -86,7 +84,6 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   const onDeleteMessage = (id: string | undefined) => {
     //remove the message
     if (id !== undefined) {
-      console.log(`remove ${id}`);
       chatsService.deleteChatMessage(id);
     }
   };

@@ -57,13 +57,11 @@ export class ChatsService {
    */
   create(annotationData: AnnotationData, now = new Date()) {
     const annotation = this._initialize(annotationData, now);
-    console.log(annotation.$tag);
     this._store.createAnnotation(annotation);
     this._store.clearChat();
   }
 
   _initialize(annotationData: AnnotationData, now = new Date()) {
-    console.log(annotationData);
     const $tag = generateHexString(8);
     /** @type {Annotation} */
     const annotation = Object.assign(
@@ -85,7 +83,6 @@ export class ChatsService {
   private messages: string[] = [];
 
   async sendNewMessage() {
-    console.log('initial chat');
     const annotation = this._store.getCurrentAnnotation();
 
     if (!annotation.$tag) {

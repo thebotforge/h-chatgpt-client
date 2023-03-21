@@ -36,7 +36,7 @@ export default function ChatCard({
   // collapsing/expanding is relevant?
   const [collapsible, setCollapsible] = useState(false);
   return (
-    <div class="flex flex-col">
+    <div class="flex flex-col bg-white p-3">
       <div class="flex">
         <div class="flex grow flex-row pl-2">
           {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}

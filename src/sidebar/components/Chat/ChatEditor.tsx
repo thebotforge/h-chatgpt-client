@@ -156,7 +156,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
 
   return (
     <>
-      <div class="flex flex-col">
+      <div class="flex flex-col bg-white p-3 mb-3">
         {header}
         {messages}
         {store.getCurrentAnnotation().$tag && store.isLoading() && (

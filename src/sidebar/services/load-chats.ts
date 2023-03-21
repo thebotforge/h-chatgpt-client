@@ -34,12 +34,10 @@ export class LoadChatsService {
    *
    */
   load() {
-    console.log('load all the chats');
     const savedChats =
       this._localStorage.getObject('hypothesis.ai.chats') || [];
 
     savedChats.forEach((chat: Chat) => {
-      console.log(chat);
       this._store.updateChat(chat);
     });
   }

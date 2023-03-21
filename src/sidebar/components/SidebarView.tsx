@@ -12,13 +12,8 @@ import { useSidebarStore } from '../store';
 import Chat from './Chat/Chat';
 import ChatOpenApiKey from './Chat/ChatOpenApiKey';
 import ChatList from './ChatList';
-import ChatView from './ChatView';
-import FilterStatus from './FilterStatus';
-import LoggedOutMessage from './LoggedOutMessage';
-import LoginPromptPanel from './LoginPromptPanel';
 import SelectionTabs from './SelectionTabs';
 import SidebarContentError from './SidebarContentError';
-import ThreadList from './ThreadList';
 import { useRootThread } from './hooks/use-root-thread';
 
 export type SidebarViewProps = {
@@ -167,7 +162,7 @@ function SidebarView({
           }}
         />
       )}
-      <div class={'bg-white p-3'}>
+      <div>
         {showChat && <Chat chat={{}} />}
         {<ChatList chatsService={chatsService} chats={store.getChats()} />}
       </div>
