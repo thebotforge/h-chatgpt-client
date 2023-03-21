@@ -267,6 +267,7 @@ function findByID(chats: Chat[], id: string) {
   return chats.find(a => a.id === id);
 }
 
+
 export const chatsModule = createStoreModule(initialState, {
   namespace: 'chats',
   reducers,
@@ -291,6 +292,6 @@ export const chatsModule = createStoreModule(initialState, {
     getCurrentMessage,
     needsOpenApiKey,
     findChatByID,
-    chatCount,
+    chatCount
   },
 });

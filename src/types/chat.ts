@@ -23,6 +23,7 @@ export interface Message {
   parameters?: Parameters;
   done?: boolean;
   usage?: Usage;
+  model?: string;
 }
 
 export interface UserSubmittedMessage {

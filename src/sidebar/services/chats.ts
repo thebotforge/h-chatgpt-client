@@ -136,7 +136,7 @@ export class ChatsService {
       Text: ${exact}
       ${this._store.getCurrentMessage()}
       `.trim(),
-      done: true,
+      done: true
     };
     this._store.createChatMessage(newMessage);
   }
@@ -201,6 +201,8 @@ export class ChatsService {
         role: cleanedRole,
         content: cleanedMessage,
         done: true,
+        model: response.model,
+        usage: response.usage
       };
       this._store.createChatMessage(responseMessage);
       this.persistChats();
@@ -236,4 +238,5 @@ export class ChatsService {
   public getMessages() {
     return this.messages;
   }
+
 }

@@ -8,6 +8,7 @@ import { useState } from 'preact/hooks';
 
 import { Chat, Message } from '../../../types/chat';
 import { isOrphan } from '../../helpers/annotation-metadata';
+import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
 import AnnotationTimestamps from '../Annotation/AnnotationTimestamps';
@@ -36,7 +37,7 @@ export default function ChatCard({
   // collapsing/expanding is relevant?
   const [collapsible, setCollapsible] = useState(false);
   return (
-    <div class="flex flex-col bg-white p-3">
+    <div class="flex flex-col bg-white p-3 mb-3">
       <div class="flex">
         <div class="flex grow flex-row pl-2">
           {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}
@@ -46,7 +47,7 @@ export default function ChatCard({
             annotationCreated={chat.created as string}
             annotationUpdated={chat.updated as string}
             annotationURL={''}
-            withEditedTimestamp={true}
+            withEditedTimestamp={false}
           />
         </div>
       </div>
