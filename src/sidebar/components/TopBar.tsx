@@ -113,7 +113,7 @@ function TopBar({
                   src="https://hypothes.is/organizations/__default__/logo"
                   alt="Hypothesis"
                 />
-                Hypothechat
+                AI Chat
               </span>
             }
           </div>

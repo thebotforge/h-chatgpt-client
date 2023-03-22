@@ -31,6 +31,11 @@ const reducers = {
     return { chat: '' };
   },
 
+  CLEAR_ANNOTATION():Partial<State> {
+    return { annotation: undefined };
+  },
+
+
   /**
    * @param {State} state
    * @param {{ message: string }} action
@@ -249,6 +254,13 @@ function clearChat() {
   return makeAction(reducers, 'CLEAR_CHAT', undefined);
 }
 
+/** Set the currently selected annotation. */
+function clearAnnotation() {
+  return makeAction(reducers, 'CLEAR_ANNOTATION', undefined);
+}
+
+
+
 /**
  * Return true when any activity is happening in the app that needs to complete
  * before the UI is ready for interactivity with annotations.
@@ -276,6 +288,7 @@ export const chatsModule = createStoreModule(initialState, {
     updateUserMessage,
     updateChat,
     clearChat,
+    clearAnnotation,
     createAnnotation,
     createOpenAIApiKey,
     createChatMessage,

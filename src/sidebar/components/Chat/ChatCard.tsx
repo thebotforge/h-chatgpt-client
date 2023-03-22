@@ -1,7 +1,7 @@
 import {
   EditIcon,
   IconButton,
-  TrashFilledIcon,
+  TrashIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import { h, FunctionalComponent } from 'preact';
 import { useState } from 'preact/hooks';
@@ -39,8 +39,9 @@ export default function ChatCard({
   return (
     <div class="flex flex-col bg-white p-3 mb-3">
       <div class="flex">
-        <div class="flex grow flex-row pl-2">
+        <div class="flex grow flex-row pl-2 text-md text-color-text font-bold">
           {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}
+          H User
         </div>
         <div className="flex justify-end grow">
           <AnnotationTimestamps
@@ -87,7 +88,7 @@ export default function ChatCard({
           onClick={() => onEdit(chat.id)}
         />
         <IconButton
-          icon={TrashFilledIcon}
+          icon={TrashIcon}
           title="Edit"
           onClick={() => onDeleteChat(chat.id)}
         />

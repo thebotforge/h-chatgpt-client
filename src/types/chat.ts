@@ -24,6 +24,7 @@ export interface Message {
   done?: boolean;
   usage?: Usage;
   model?: string;
+  userMessage?: string;
 }
 
 export interface UserSubmittedMessage {

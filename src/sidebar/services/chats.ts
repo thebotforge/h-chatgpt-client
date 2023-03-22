@@ -129,15 +129,12 @@ export class ChatsService {
       chatID: this._store.getCurrentChat()?.id,
       timestamp: Date.now(),
       role: 'user',
-      content: `
-      Look at the following annotation:
-      URL: ${uri} 
-      Title: ${title}
-      Text: ${exact}
-      ${this._store.getCurrentMessage()}
-      `.trim(),
-      done: true
+      content:
+        `This chat is about the document at: "${uri}" with the title "${title}" the text in question is "${exact}" ${this._store.getCurrentMessage()}`.trim(),
+      done: true,
+      userMessage: this._store.getCurrentMessage(),
     };
+
     this._store.createChatMessage(newMessage);
   }
 
@@ -202,7 +199,7 @@ export class ChatsService {
         content: cleanedMessage,
         done: true,
         model: response.model,
-        usage: response.usage
+        usage: response.usage,
       };
       this._store.createChatMessage(responseMessage);
       this.persistChats();
@@ -235,8 +232,8 @@ export class ChatsService {
     this.persistChats();
   }
 
+
   public getMessages() {
     return this.messages;
   }
-
 }

@@ -4,7 +4,6 @@ import {
   EditIcon,
   ExpandIcon,
   IconButton,
-  TrashFilledIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import classNames from 'classnames';
 import { h, FunctionalComponent } from 'preact';
@@ -89,10 +88,12 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   };
 
   const displayChats = useMemo(() => {
+    console.log(store.getChats())
+    const currentChat = store.getCurrentChat()
+    
     if (store.getChats()) {
-      return store.getChats().map((chat, index) => {
-        const props = `chats-${index}`;
-
+      return store.getChats().filter(item => item.id !== currentChat?.id).map((chat, index) => {
+      
         return (
           <ChatCard
             chat={chat}

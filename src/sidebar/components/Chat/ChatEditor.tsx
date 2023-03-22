@@ -1,10 +1,11 @@
 import ModalNext from '@hypothesis/frontend-shared/lib/components/feedback/Modal.js';
 import {
   Button,
+  CancelIcon,
+  HelpIcon,
   IconButton,
   Input,
   Spinner,
-  TrashFilledIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import { useCallback, useState, useRef, useMemo } from 'preact/hooks';
 
@@ -13,10 +14,12 @@ import { isOrphan, quote } from '../../helpers/annotation-metadata';
 import { withServices } from '../../service-context';
 import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
+import { tokenCost, tokenCount } from '../../util/chat';
 import AnnotationBody from '../Annotation/AnnotationBody';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
 import { PersonIcon, ChatbotIcon } from './../../../images/assets.js';
 import ChatMessage from './ChatMessage';
+import ChatStats from './ChatStats';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
@@ -31,9 +34,13 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
 
   const isEmpty = false; //!text && !tags.length;
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const promptToken = tokenCount(store.getChats(),'prompt_tokens')
+  const completionToken = tokenCount(store.getChats(),'completion_tokens')
+  const totalToken = promptToken + completionToken
   const currentChat = store.getCurrentChat();
   const currentAnnotation = store.getCurrentAnnotation();
+
+  const [isHoveringChatIcon, setIsHoveringChatIcon] = useState<boolean>(false);
 
   const handleReset = () => {
     setMsg('');
@@ -98,38 +105,53 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     );
   }, [store, currentChat]);
 
+  // Revert changes to this annotation
+  const onCancel = () => {
+    console.log('cancel')
+    store.clearAnnotation();
+  };
+
   const suggestions = useMemo(() => {
-    const suggest = ['Explain', 'Summarize', 'Translate'];
+    const suggestions = [
+      {"tag": "Explain", "suggestion": "Can you explain what this means"},
+      {"tag": "Summarize", "suggestion": "Can you summarize this"},
+      {"tag": "Translate", "suggestion": "Can you translate this"}
+    ];
 
     return (
       <div class={'flex flex-row'}>
-        {suggest.map(suggestion => {
+        {suggestions.map(suggestion => {
           return (
             <button
               onClick={() =>
-                handleTextFieldChange({ target: { textContent: suggestion } })
+                handleTextFieldChange({ target: { textContent: suggestion.suggestion } })
               }
-              class="inline-block bg-gray-200 mr-2 mb-2 py-1 px-3 text-sm font-bold bg-gray-100 transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
-            >
-              {suggestion}
+              class="inline-block mr bg-gray-100 p-2.5 gap-x-1.5 text-sm font-bold transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+              style="margin-right: 4px;">
+              {suggestion.tag}
             </button>
           );
         })}
       </div>
     );
   }, [store.getCurrentChat()]);
+
   const messages = useMemo(() => {
-    if (showMessages()) {
-      return (currentChat?.messages ?? [])
-        .filter(message => message?.role !== 'system')
-        .map((message, index) => {
-          const props = `chat-messages-${index}`;
-          return (
-            <ChatMessage message={message} onDeleteMessage={onDeleteMessage} />
-          );
-        });
-    }
-  }, [store, currentChat, currentAnnotation]);
+      if (showMessages()) {
+        return (
+          <div class="p-3">
+            {(currentChat?.messages ?? [])
+              .filter(message => message?.role !== 'system')
+              .map((message, index) => {
+                const props = `chat-messages-${index}`;
+                return (
+                  <ChatMessage message={message} onDeleteMessage={onDeleteMessage} />
+                );
+              })}
+          </div>
+        );
+      }
+    }, [store, currentChat, currentAnnotation]);
 
   const header = useMemo(() => {
     const annotationQuote =
@@ -137,7 +159,10 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
         ? quote(store.getCurrentAnnotation())
         : '';
     return (
-      <div>
+      <div class="p-3">
+        {store.getCurrentAnnotation() &&
+          store.getCurrentAnnotation().target && (<div class={"text-md text-color-text font-bold"}>H User</div>)}
+        <div>
         {store.getCurrentAnnotation() && (
           <AnnotationQuote
             quote={annotationQuote || ''}
@@ -150,13 +175,21 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
           store.getCurrentAnnotation().target && (
             <AnnotationBody annotation={store.getCurrentAnnotation()} />
           )}
+        </div>
+
       </div>
     );
   }, [currentAnnotation]);
+  const handleMouseEnterChatIcon = () => {
+    setIsHoveringChatIcon(true);
+  };
 
+  const handleMouseLeaveChatIcon = () => {
+    setIsHoveringChatIcon(false);
+  };
   return (
     <>
-      <div class="flex flex-col bg-white p-3 mb-3">
+      <div class="flex flex-col bg-white mb-3">
         {header}
         {messages}
         {store.getCurrentAnnotation().$tag && store.isLoading() && (
@@ -166,7 +199,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
           store.getCurrentAnnotation().target && (
             <>
               <div class="flex flex-row">
-                <div class="p-4 w-3/4">
+                <div class="p-4 flex grow">
                   <Input
                     ref={inputRef}
                     type="text"
@@ -178,13 +211,58 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
                     class="bg-gray-100 border border-solid border-gray-400 rounded"
                   />
                 </div>
-                <div class="p-4 w-1/4">
+                {/* <div class="p-4 w-1/4">
                   <Button type="submit" onClick={handleSubmit}>
                     Chat
                   </Button>
-                </div>
+                </div> */}
               </div>
-              <div>{suggestions}</div>
+              <div class="p-3">{suggestions}</div>
+              
+              <div class="relative flex p-3 border-t border-gray-1" style={"justify-content: space-between;"}>
+                <Button data-testid="cancel-button" onClick={onCancel} size="lg">
+                  <CancelIcon />
+                  Cancel
+                </Button>
+                <IconButton
+                icon={HelpIcon}
+                onMouseEnter={handleMouseEnterChatIcon}
+                onMouseLeave={handleMouseLeaveChatIcon}
+                size="xs"
+                title="Info"
+              />
+              
+              {isHoveringChatIcon && (
+            <ChatStats>
+              {
+                <>
+                <div  style="top: 10px; right: 28px;" class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
+      
+                  <p>Model: {'GPT-4'}</p>
+                  <p>Tokens:</p>
+                  <ul>
+                    <li>
+                      {promptToken || 0} prompt tokens ($
+                      {tokenCost(promptToken || 0)})
+                    </li>
+                    <li>
+                      {completionToken || 0} completion tokens
+                      (${tokenCost(completionToken || 0)})
+                    </li>
+                    <li>
+                      {totalToken || 0} total tokens ($
+                      {tokenCost(totalToken || 0)})
+                    </li>
+                  </ul>
+                  </div>
+                </>
+              }
+            </ChatStats>
+          )}
+              </div>
+
+          
+              
             </>
           )}
       </div>

@@ -1,6 +1,6 @@
 import {
   IconButton,
-  TrashFilledIcon,
+  TrashIcon,
 } from '@hypothesis/frontend-shared/lib/next';
 import { h, FunctionComponent } from 'preact';
 import { useState } from 'preact/hooks';
@@ -32,13 +32,15 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
     setIsHoveringChatIcon(true);
   };
 
+  const handleMouseLeaveChatIcon = () => {
+    setIsHoveringChatIcon(false);
+  };
+
   const handleMouseLeave = () => {
     setIsHovering(false);
   };
 
-  const handleMouseLeaveChatIcon = () => {
-    setIsHoveringChatIcon(false);
-  };
+
 
   return (
     <div
@@ -52,7 +54,6 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
           <div
             onMouseEnter={handleMouseEnterChatIcon}
             onMouseLeave={handleMouseLeaveChatIcon}
-            
           >
             <ChatbotIcon />
           </div>
@@ -60,28 +61,49 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
             <ChatStats>
               {
                 <>
+                    <div class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
+      
                   <p>{formatDate(new Date(message.timestamp))}</p>
                   <p>Model: {message.model}</p>
                   <p>Tokens:</p>
                   <ul>
-                    <li>{message?.usage?.prompt_tokens || 0} prompt tokens (${tokenCost(message?.usage?.prompt_tokens || 0)})</li>
-                    <li> {message?.usage?.completion_tokens || 0} completion tokens (${tokenCost(message?.usage?.completion_tokens || 0)})</li>
-                    <li>{message?.usage?.total_tokens || 0} total tokens (${tokenCost(message?.usage?.total_tokens || 0)})</li>
+                    <li>
+                      {message?.usage?.prompt_tokens || 0} prompt tokens ($
+                      {tokenCost(message?.usage?.prompt_tokens || 0)})
+                    </li>
+                    <li>
+                      {message?.usage?.completion_tokens || 0} completion tokens
+                      (${tokenCost(message?.usage?.completion_tokens || 0)})
+                    </li>
+                    <li>
+                      {message?.usage?.total_tokens || 0} total tokens ($
+                      {tokenCost(message?.usage?.total_tokens || 0)})
+                    </li>
                   </ul>
+
+                  </div>
                 </>
               }
             </ChatStats>
           )}
         </div>
       )}
-        
-        {message.role === 'user' ? <div class="flex justify-end"><span>{message.content.trim()}</span></div> : 
-        <div class={"pl-2"}>{message.content.trim()}</div>}
+
+      {message.role === 'user' ? (
+        <div class="flex justify-end mb-3">
+            <div class="rounded-lg p-1.5 px-3 space-x-2.5 bg-gray-100">
+                {message.userMessage?.trim()}
+            </div>
+          
+        </div>
+      ) : (
+        <div class={'pl-2'}>{message.content.trim()}</div>
+      )}
 
       {isHovering && onDeleteMessage && (
         <div className="absolute top-0 right-0">
           <IconButton
-            icon={TrashFilledIcon}
+            icon={TrashIcon}
             title="Edit"
             onClick={() => onDeleteMessage(message.id)}
           />
