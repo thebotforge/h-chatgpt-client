@@ -7,13 +7,20 @@ import { h, FunctionalComponent } from 'preact';
 import { useState } from 'preact/hooks';
 
 import { Chat, Message } from '../../../types/chat';
-import { isOrphan } from '../../helpers/annotation-metadata';
+import { Annotation } from '../../../types/api';
+import { isOrphan, quote } from '../../helpers/annotation-metadata';
 import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
 import AnnotationTimestamps from '../Annotation/AnnotationTimestamps';
 import Excerpt from '../Excerpt';
 import ChatMessage from './ChatMessage';
+import { AnnotationData } from '../../../types/annotator';
+
+
+/**
+ * @typedef {import('../../types/api').Annotation} Annotation
+ */
 
 interface ChatProps {
   chat: Chat;
@@ -53,8 +60,9 @@ export default function ChatCard({
         </div>
       </div>
       <div class="w-full">
-        <AnnotationQuote
-          quote={chat.title || ''}
+         <AnnotationQuote
+         // @ts-ignore
+          quote={chat.annotation?.target?.[0]?.selector?.[2]?.exact ?? 'Not found'}
           isHovered={false}
           isOrphan={isOrphan(store.getCurrentAnnotation())}
         />

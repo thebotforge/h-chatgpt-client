@@ -1,4 +1,5 @@
 import { AnnotationData } from './annotator';
+import { Annotation } from './api';
 import { ChatMessage } from './chats-api';
 
 export interface Usage {
@@ -52,7 +53,7 @@ export interface Chat {
   messages?: Message[];
   created?: string | undefined;
   updated?: string;
-  annotation?: AnnotationData;
+  annotation?: AnnotationData | Annotation;
   editing?: boolean;
 }
 
