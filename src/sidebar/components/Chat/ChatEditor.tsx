@@ -139,7 +139,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
   const messages = useMemo(() => {
       if (showMessages()) {
         return (
-          <div class="p-3">
+          <div class="grid gap-4 p-3 pt-0">
             {(currentChat?.messages ?? [])
               .filter(message => message?.role !== 'system')
               .map((message, index) => {
@@ -161,7 +161,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     return (
       <div class="p-3">
         {store.getCurrentAnnotation() &&
-          store.getCurrentAnnotation().target && (<div class={"text-md text-color-text font-bold"}>H User</div>)}
+          store.getCurrentAnnotation().target && (<div class={"text-md text-color-text font-bold mb-2"}>H User</div>)}
         <div>
         {store.getCurrentAnnotation() && (
           <AnnotationQuote
@@ -198,27 +198,19 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
         {store.getCurrentAnnotation() &&
           store.getCurrentAnnotation().target && (
             <>
-              <div class="flex flex-row">
-                <div class="p-4 flex grow">
-                  <Input
-                    ref={inputRef}
-                    type="text"
-                    placeholder={'Add a custom prompt'}
-                    name="message"
-                    value={msg}
-                    onChange={onChange}
-                    onKeyDown={onKeyDown}
-                    class="bg-gray-100 border border-solid border-gray-400 rounded"
-                  />
-                </div>
-                {/* <div class="p-4 w-1/4">
-                  <Button type="submit" onClick={handleSubmit}>
-                    Chat
-                  </Button>
-                </div> */}
-              </div>
               <div class="p-3">{suggestions}</div>
-              
+              <div class="p-3 pt-0">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  placeholder={'Add a custom prompt'}
+                  name="message"
+                  value={msg}
+                  onChange={onChange}
+                  onKeyDown={onKeyDown}
+                  class="bg-gray-100 border border-solid border-gray-400 rounded"
+                />
+              </div>
               <div class="relative flex p-3 border-t border-gray-1" style={"justify-content: space-between;"}>
                 <Button data-testid="cancel-button" onClick={onCancel} size="lg">
                   <CancelIcon />
@@ -231,13 +223,13 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
                 size="xs"
                 title="Info"
               />
-              
+
               {isHoveringChatIcon && (
             <ChatStats>
               {
                 <>
                 <div  style="top: 10px; right: 28px;" class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
-      
+
                   <p>Model: {'GPT-4'}</p>
                   <p>Tokens:</p>
                   <ul>
@@ -261,8 +253,8 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
           )}
               </div>
 
-          
-              
+
+
             </>
           )}
       </div>

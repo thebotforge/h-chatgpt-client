@@ -45,13 +45,14 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
   return (
     <div
       aria-label={props}
-      class="relative flex justify-end grow flex-row hover:cursor-pointer"
+      class="relative flex items-center justify-end grow flex-row hover:cursor-pointer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {message.role === 'assistant' && (
         <div>
           <div
+            class="bg-gray-100 p-1 rounded-xl"
             onMouseEnter={handleMouseEnterChatIcon}
             onMouseLeave={handleMouseLeaveChatIcon}
           >
@@ -62,7 +63,7 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
               {
                 <>
                     <div class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
-      
+
                   <p>{formatDate(new Date(message.timestamp))}</p>
                   <p>Model: {message.model}</p>
                   <p>Tokens:</p>
@@ -90,24 +91,24 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
       )}
 
       {message.role === 'user' ? (
-        <div class="flex justify-end mb-3">
+        <div class="flex justify-end">
             <div class="rounded-lg p-1.5 px-3 space-x-2.5 bg-gray-100">
                 {message.userMessage?.trim()}
             </div>
-          
+
         </div>
       ) : (
         <div class={'pl-2'}>{message.content.trim()}</div>
       )}
 
       {isHovering && onDeleteMessage && (
-        <div className="absolute top-0 right-0">
-          <IconButton
-            icon={TrashIcon}
-            title="Edit"
-            onClick={() => onDeleteMessage(message.id)}
-          />
-        </div>
+          <div class="absolute border border-gray-100 rounded bg-white top-0 right-0">
+            <IconButton
+              icon={TrashIcon}
+              title="Edit"
+              onClick={() => onDeleteMessage(message.id)}
+            />
+          </div>
       )}
     </div>
   );

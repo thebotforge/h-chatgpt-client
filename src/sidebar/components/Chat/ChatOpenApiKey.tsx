@@ -17,16 +17,17 @@ export default function ChatOpenApiKey({ onClick }: ChatOpenApiKeyProps) {
     setKey(event.target.value);
   }
   return (
-    <div>
+    <div class="grid gap-2 mb-3">
       <p>Please add your OpenAI key, this is stored only on this device.</p>
-
-      <Input
+      <div class="flex items-stretch gap-x-1">
+        <Input
         onInput={handleTextFieldChange}
         placeholder={'Paste your API key here'}
       />
       <Button title="Log in" variant="primary" onClick={() => onClick(key)}>
         Log in
       </Button>
+      </div>
     </div>
   );
 }
