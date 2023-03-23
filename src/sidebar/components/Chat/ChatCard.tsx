@@ -60,12 +60,15 @@ export default function ChatCard({
         </div>
       </div>
       <div class="w-full">
-         <AnnotationQuote
-         // @ts-ignore
+        {
+        chat.annotation && <AnnotationQuote
+        // @ts-ignore
           quote={chat.annotation?.target?.[0]?.selector?.[2]?.exact ?? 'Not found'}
           isHovered={false}
-          isOrphan={isOrphan(store.getCurrentAnnotation())}
+          isOrphan={isOrphan(chat.annotation)}
         />
+        }
+         
       </div>
       <Excerpt
         collapse={collapsed}

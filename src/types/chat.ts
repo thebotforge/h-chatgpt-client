@@ -53,8 +53,9 @@ export interface Chat {
   messages?: Message[];
   created?: string | undefined;
   updated?: string;
-  annotation?: AnnotationData | Annotation;
+  annotation?: Annotation;
   editing?: boolean;
+  tags?:[]
 }
 
 export interface RootState {

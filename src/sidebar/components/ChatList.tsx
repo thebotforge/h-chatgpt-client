@@ -61,7 +61,7 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   chatsService,
 }) => {
   const store = useSidebarStore();
-  store.getChats();
+  const currentChat = store.getCurrentChat()
   const onEdit = (id: string | undefined) => {
     //do something to the selected chat
     //change the current chat to this id
@@ -89,10 +89,10 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
 
   const displayChats = useMemo(() => {
     console.log(store.getChats())
-    const currentChat = store.getCurrentChat()
     
     if (store.getChats()) {
-      return store.getChats().filter(item => item.id !== currentChat?.id).map((chat, index) => {
+      const filteredChats = currentChat ? store.getChats().filter(item => item.id !== currentChat?.id) : store.getChats()
+      return filteredChats.map((chat, index) => {
       
         return (
           <ChatCard
@@ -104,7 +104,7 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
         );
       });
     }
-  }, [store, chats]);
+  }, [store, chats, currentChat]);
   return <div>{displayChats}</div>;
 };
 

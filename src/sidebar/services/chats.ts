@@ -232,6 +232,10 @@ export class ChatsService {
     this.persistChats();
   }
 
+  saveChat() {
+    this.persistChats();
+  }
+
 
   public getMessages() {
     return this.messages;

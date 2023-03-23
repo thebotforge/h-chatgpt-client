@@ -25,7 +25,7 @@ export default function ChatOpenApiKey({ onClick }: ChatOpenApiKeyProps) {
         placeholder={'Paste your API key here'}
       />
       <Button title="Log in" variant="primary" onClick={() => onClick(key)}>
-        Log in
+        Save
       </Button>
       </div>
     </div>
