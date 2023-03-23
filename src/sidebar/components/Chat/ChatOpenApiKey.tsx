@@ -21,12 +21,12 @@ export default function ChatOpenApiKey({ onClick }: ChatOpenApiKeyProps) {
       <p>Please add your OpenAI key, this is stored only on this device.</p>
       <div class="flex items-stretch gap-x-1">
         <Input
-        onInput={handleTextFieldChange}
-        placeholder={'Paste your API key here'}
-      />
-      <Button title="Log in" variant="primary" onClick={() => onClick(key)}>
-        Save
-      </Button>
+          onInput={handleTextFieldChange}
+          placeholder={'Paste your API key here'}
+        />
+        <Button title="Log in" variant="primary" onClick={() => onClick(key)}>
+          Save
+        </Button>
       </div>
     </div>
   );

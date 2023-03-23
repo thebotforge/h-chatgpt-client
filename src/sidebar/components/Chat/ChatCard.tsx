@@ -6,8 +6,9 @@ import {
 import { h, FunctionalComponent } from 'preact';
 import { useState } from 'preact/hooks';
 
+import { AnnotationData } from '../../../types/annotator';
+import { Annotation, Target } from '../../../types/api';
 import { Chat, Message } from '../../../types/chat';
-import { Annotation } from '../../../types/api';
 import { isOrphan, quote } from '../../helpers/annotation-metadata';
 import { ChatsService } from '../../services/chats';
 import { useSidebarStore } from '../../store';
@@ -15,8 +16,6 @@ import AnnotationQuote from '../Annotation/AnnotationQuote';
 import AnnotationTimestamps from '../Annotation/AnnotationTimestamps';
 import Excerpt from '../Excerpt';
 import ChatMessage from './ChatMessage';
-import { AnnotationData } from '../../../types/annotator';
-
 
 /**
  * @typedef {import('../../types/api').Annotation} Annotation
@@ -47,8 +46,8 @@ export default function ChatCard({
     <div class="flex flex-col bg-white p-3 mb-3">
       <div class="flex">
         <div class="flex grow flex-row pl-2 text-md text-color-text font-bold">
-          {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}
-          H User
+          {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}H
+          User
         </div>
         <div className="flex justify-end grow">
           <AnnotationTimestamps
@@ -60,15 +59,13 @@ export default function ChatCard({
         </div>
       </div>
       <div class="w-full">
-        {
-        chat.annotation && <AnnotationQuote
-        // @ts-ignore
-          quote={chat.annotation?.target?.[0]?.selector?.[2]?.exact ?? 'Not found'}
-          isHovered={false}
-          isOrphan={isOrphan(chat.annotation)}
-        />
-        }
-         
+        {chat.annotation && (
+          <AnnotationQuote
+            quote={quote(chat.annotation) as string}
+            isHovered={false}
+            isOrphan={isOrphan(chat.annotation)}
+          />
+        )}
       </div>
       <Excerpt
         collapse={collapsed}

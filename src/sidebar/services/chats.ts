@@ -107,6 +107,7 @@ export class ChatsService {
       messages: [],
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
+      tags: [],
     };
 
     this._store.updateChat(newChatData);
@@ -132,7 +133,7 @@ export class ChatsService {
       content:
         `This chat is about the document at: "${uri}" with the title "${title}" the text in question is "${exact}" ${this._store.getCurrentMessage()}`.trim(),
       done: true,
-      userMessage: this._store.getCurrentMessage(),
+      displayMessage: this._store.getCurrentMessage(),
     };
 
     this._store.createChatMessage(newMessage);
@@ -158,6 +159,7 @@ export class ChatsService {
           role: 'user',
           content: `${this._store.getCurrentMessage()}`.trim(),
           done: true,
+          displayMessage: `${this._store.getCurrentMessage()}`.trim(),
         };
         this._store.createChatMessage(newMessage);
         await this.completeMessage();
@@ -167,7 +169,7 @@ export class ChatsService {
         //if not then create a new chat
         await this.sendNewMessage();
         await this.completeMessage();
-        this.persistChats();
+        //this.persistChats();
       }
     } catch (error) {
       console.error(error);
@@ -215,7 +217,7 @@ export class ChatsService {
         done: true,
       };
       this._store.createChatMessage(responseMessage);
-      this.persistChats();
+      //this.persistChats();
     }
   }
 
@@ -235,7 +237,6 @@ export class ChatsService {
   saveChat() {
     this.persistChats();
   }
-
 
   public getMessages() {
     return this.messages;

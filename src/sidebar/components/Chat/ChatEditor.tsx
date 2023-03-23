@@ -11,15 +11,16 @@ import { useCallback, useState, useRef, useMemo } from 'preact/hooks';
 
 import { Chat } from '../../../types/chat';
 import { isOrphan, quote } from '../../helpers/annotation-metadata';
-import type { TagsService } from '../../services/tags';
+import { withServices } from '../../service-context';
 import { ChatsService } from '../../services/chats';
+import type { TagsService } from '../../services/tags';
 import { useSidebarStore } from '../../store';
 import { tokenCost, tokenCount } from '../../util/chat';
 import AnnotationBody from '../Annotation/AnnotationBody';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
+import TagEditor from '../TagEditor';
 import ChatMessage from './ChatMessage';
 import ChatStats from './ChatStats';
-import TagEditor from '../TagEditor';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
@@ -28,21 +29,21 @@ export type ChatEditorProps = {
   tags: TagsService;
 };
 
-export default function ChatEditor({ chatsService }: ChatEditorProps) {
+function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
   const store = useSidebarStore();
   const [msg, setMsg] = useState('');
   const service = chatsService;
   // Track the currently-entered text in the tag editor's input
   const [pendingTag, setPendingTag] = useState<string | null>(null);
-  const isEmpty = false; //!text && !tags.length;
+  const isEmpty = false;
   const inputRef = useRef<HTMLInputElement>(null);
-  const promptToken = tokenCount(store.getChats(),'prompt_tokens')
-  const completionToken = tokenCount(store.getChats(),'completion_tokens')
-  const totalToken = promptToken + completionToken
+  const promptToken = tokenCount(store.getChats(), 'prompt_tokens');
+  const completionToken = tokenCount(store.getChats(), 'completion_tokens');
+  const totalToken = promptToken + completionToken;
   const currentChat = store.getCurrentChat();
   const currentAnnotation = store.getCurrentAnnotation();
-  const tags = currentChat?.tags ?? [];
   const [isHoveringChatIcon, setIsHoveringChatIcon] = useState<boolean>(false);
+  const tags = currentChat?.tags ?? [];
 
   const handleReset = () => {
     setMsg('');
@@ -50,7 +51,8 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
 
   const onEditTags = useCallback(
     (tags: string[]) => {
-      console.log(tags)
+      console.log(tags);
+      store.updateChat({ ...currentChat, tags });
     },
     [currentChat, store]
   );
@@ -70,7 +72,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
       }
       const tagList = [...tags, newTag];
       // Update the tag locally for the suggested-tag list
-      //tagsService.store(tagList);
+      tagsService.store(tagList);
       onEditTags(tagList);
       return true;
     },
@@ -102,7 +104,7 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     if (!store.getCurrentAnnotation()) alert('select some text');
 
     service.sendMessage();
-    console.log('talk to the ChatAPI');
+
     handleReset();
   };
 
@@ -118,15 +120,12 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     }
   };
 
-  const onChange = useCallback(
-    (event: any) => {
-      const value = event.target.value;
-      setMsg(value);
-      store.updateUserMessage(value || 'no txtx');
-      console.log('Button clicked');
-    },
-    [store]
-  );
+  const onChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    setMsg(value);
+    store.updateUserMessage(value || '');
+  };
 
   const handleTextFieldChange = useCallback(
     (event: any) => {
@@ -154,22 +153,22 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
 
   // Revert changes to this annotation
   const onCancel = () => {
-    console.log('cancel')
+    console.log('cancel');
     store.clearAnnotation();
     store.clearChat();
   };
 
   // Revert changes to this annotation
   const onSave = () => {
-    console.log('save')
+    console.log('save');
     chatsService.saveChat();
   };
 
   const suggestions = useMemo(() => {
     const suggestions = [
-      {"tag": "Explain", "suggestion": "Can you explain what this means"},
-      {"tag": "Summarize", "suggestion": "Can you summarize this"},
-      {"tag": "Translate", "suggestion": "Can you translate this"}
+      { tag: 'Explain', suggestion: 'Can you explain what this means' },
+      { tag: 'Summarize', suggestion: 'Can you summarize this' },
+      { tag: 'Translate', suggestion: 'Can you translate this' },
     ];
 
     return (
@@ -178,10 +177,13 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
           return (
             <button
               onClick={() =>
-                handleTextFieldChange({ target: { textContent: suggestion.suggestion } })
+                handleTextFieldChange({
+                  target: { textContent: suggestion.suggestion },
+                })
               }
               class="inline-block mr bg-gray-100 p-2.5 gap-x-1.5 text-sm font-bold transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
-              style="margin-right: 4px;">
+              style="margin-right: 4px;"
+            >
               {suggestion.tag}
             </button>
           );
@@ -191,21 +193,24 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
   }, [store.getCurrentChat()]);
 
   const messages = useMemo(() => {
-      if (showMessages()) {
-        return (
-          <div class="grid gap-4 p-3 pt-0">
-            {(currentChat?.messages ?? [])
-              .filter(message => message?.role !== 'system')
-              .map((message, index) => {
-                const props = `chat-messages-${index}`;
-                return (
-                  <ChatMessage message={message} onDeleteMessage={onDeleteMessage} />
-                );
-              })}
-          </div>
-        );
-      }
-    }, [store, currentChat, currentAnnotation]);
+    if (showMessages()) {
+      return (
+        <div class="grid gap-4 p-3 pt-0">
+          {(currentChat?.messages ?? [])
+            .filter(message => message?.role !== 'system')
+            .map((message, index) => {
+              const props = `chat-messages-${index}`;
+              return (
+                <ChatMessage
+                  message={message}
+                  onDeleteMessage={onDeleteMessage}
+                />
+              );
+            })}
+        </div>
+      );
+    }
+  }, [store, currentChat, currentAnnotation]);
 
   const header = useMemo(() => {
     const annotationQuote =
@@ -215,22 +220,23 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
     return (
       <div class="p-3">
         {store.getCurrentAnnotation() &&
-          store.getCurrentAnnotation().target && (<div class={"text-md text-color-text font-bold mb-2"}>H User</div>)}
-        <div>
-        {store.getCurrentAnnotation() && (
-          <AnnotationQuote
-            quote={annotationQuote || ''}
-            isHovered={false}
-            isOrphan={isOrphan(store.getCurrentAnnotation())}
-          />
-        )}
-
-        {store.getCurrentAnnotation() &&
           store.getCurrentAnnotation().target && (
-            <AnnotationBody annotation={store.getCurrentAnnotation()} />
+            <div class={'text-md text-color-text font-bold mb-2'}>H User</div>
           )}
-        </div>
+        <div>
+          {store.getCurrentAnnotation() && (
+            <AnnotationQuote
+              quote={annotationQuote || ''}
+              isHovered={false}
+              isOrphan={isOrphan(store.getCurrentAnnotation())}
+            />
+          )}
 
+          {store.getCurrentAnnotation() &&
+            store.getCurrentAnnotation().target && (
+              <AnnotationBody annotation={store.getCurrentAnnotation()} />
+            )}
+        </div>
       </div>
     );
   }, [currentAnnotation]);
@@ -255,19 +261,23 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
               <div class="p-3">{suggestions}</div>
               <div class="p-3 pt-0">
                 <Input
+                  aria-label={'chatinput'}
                   ref={inputRef}
                   type="text"
                   placeholder={'Add a custom prompt'}
                   name="message"
                   value={msg}
-                  onChange={onChange}
+                  onInput={onChange}
                   onKeyDown={onKeyDown}
                   class="bg-gray-100 border border-solid border-gray-400 rounded"
                 />
               </div>
-              <div class="relative flex flex-col p-3 border-t border-gray-1" style={"justify-content: space-between;"}>
-                <div class="flex flex-col">
-                    <TagEditor
+              <div
+                class="relative flex flex-col p-3 border-t border-gray-1"
+                style={'justify-content: space-between;'}
+              >
+                <div class="flex flex-col pt-3 pb-2">
+                  <TagEditor
                     onAddTag={onAddTag}
                     onRemoveTag={onRemoveTag}
                     onTagInput={setPendingTag}
@@ -275,60 +285,68 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
                   />
                 </div>
                 <div class="flex flex-row">
-                  
                   <div class="grow">
-                  <div class="flex flex-row space-x-2 p-3">
-                    <Button data-testid="save-button" onClick={onSave} size="lg" classes="bg-grey-4">
-                      Save
-                    </Button>
-                    <Button data-testid="cancel-button" onClick={onCancel} size="lg">
-                      <CancelIcon />
-                      Cancel
-                    </Button>
+                    <div class="flex flex-row space-x-2">
+                      <Button
+                        data-testid="save-button"
+                        onClick={onSave}
+                        size="lg"
+                        classes="bg-grey-4"
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        data-testid="cancel-button"
+                        onClick={onCancel}
+                        size="lg"
+                      >
+                        <CancelIcon />
+                        Cancel
+                      </Button>
                     </div>
                   </div>
-                  <div class="flex items-center">   <IconButton
-                icon={HelpIcon}
-                onMouseEnter={handleMouseEnterChatIcon}
-                onMouseLeave={handleMouseLeaveChatIcon}
-                size="xs"
-                title="Info"
-              /></div>
-                </div>
-
-              </div>
-          
-              {isHoveringChatIcon && (
-            <ChatStats>
-              {
-                <>
-                <div style="top: 10px; right: 28px;" class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
-
-                  <p>Model: {'GPT-4'}</p>
-                  <p>Tokens:</p>
-                  <ul>
-                    <li>
-                      {promptToken || 0} prompt tokens ($
-                      {tokenCost(promptToken || 0)})
-                    </li>
-                    <li>
-                      {completionToken || 0} completion tokens
-                      (${tokenCost(completionToken || 0)})
-                    </li>
-                    <li>
-                      {totalToken || 0} total tokens ($
-                      {tokenCost(totalToken || 0)})
-                    </li>
-                  </ul>
+                  <div class="flex items-center">
+                    {' '}
+                    <IconButton
+                      icon={HelpIcon}
+                      onMouseEnter={handleMouseEnterChatIcon}
+                      onMouseLeave={handleMouseLeaveChatIcon}
+                      size="xs"
+                      title="Info"
+                    />
                   </div>
-                </>
-              }
-            </ChatStats>
-          )}
-              
+                </div>
+              </div>
 
-
-
+              {isHoveringChatIcon && (
+                <ChatStats>
+                  {
+                    <>
+                      <div
+                        style="top: 10px; right: 28px;"
+                        class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white"
+                      >
+                        <p>Model: {'GPT-4'}</p>
+                        <p>Tokens:</p>
+                        <ul>
+                          <li>
+                            {promptToken || 0} prompt tokens ($
+                            {tokenCost(promptToken || 0)})
+                          </li>
+                          <li>
+                            {completionToken || 0} completion tokens ($
+                            {tokenCost(completionToken || 0)})
+                          </li>
+                          <li>
+                            {totalToken || 0} total tokens ($
+                            {tokenCost(totalToken || 0)})
+                          </li>
+                        </ul>
+                      </div>
+                    </>
+                  }
+                </ChatStats>
+              )}
             </>
           )}
       </div>
@@ -336,3 +354,4 @@ export default function ChatEditor({ chatsService }: ChatEditorProps) {
   );
 }
 
+export default withServices(ChatEditor, ['chatsService', 'tags']);

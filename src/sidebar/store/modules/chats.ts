@@ -31,10 +31,9 @@ const reducers = {
     return { chat: '' };
   },
 
-  CLEAR_ANNOTATION():Partial<State> {
+  CLEAR_ANNOTATION(): Partial<State> {
     return { annotation: undefined };
   },
-
 
   /**
    * @param {State} state
@@ -259,8 +258,6 @@ function clearAnnotation() {
   return makeAction(reducers, 'CLEAR_ANNOTATION', undefined);
 }
 
-
-
 /**
  * Return true when any activity is happening in the app that needs to complete
  * before the UI is ready for interactivity with annotations.
@@ -278,7 +275,6 @@ function findChatByID(state: State, id: string) {
 function findByID(chats: Chat[], id: string) {
   return chats.find(a => a.id === id);
 }
-
 
 export const chatsModule = createStoreModule(initialState, {
   namespace: 'chats',
@@ -305,6 +301,6 @@ export const chatsModule = createStoreModule(initialState, {
     getCurrentMessage,
     needsOpenApiKey,
     findChatByID,
-    chatCount
+    chatCount,
   },
 });

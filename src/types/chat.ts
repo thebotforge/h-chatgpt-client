@@ -25,7 +25,7 @@ export interface Message {
   done?: boolean;
   usage?: Usage;
   model?: string;
-  userMessage?: string;
+  displayMessage?: string;
 }
 
 export interface UserSubmittedMessage {
@@ -55,7 +55,7 @@ export interface Chat {
   updated?: string;
   annotation?: Annotation;
   editing?: boolean;
-  tags?:[]
+  tags: string[];
 }
 
 export interface RootState {
