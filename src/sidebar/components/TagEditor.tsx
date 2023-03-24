@@ -251,12 +251,14 @@ function TagEditor({
     activeItem >= 0 ? `${tagEditorId}-AutocompleteList-item-${activeItem}` : '';
 
   return (
-    <div className="space-y-4">
-      <TagList>
-        {tagList.map(tag => {
-          return <TagListItem key={tag} onRemoveTag={onRemoveTag} tag={tag} />;
-        })}
-      </TagList>
+    <div className="space-y-2">
+      {tagList.length > 0 && (
+        <TagList>
+          {tagList.map(tag => {
+            return <TagListItem key={tag} onRemoveTag={onRemoveTag} tag={tag} />;
+          })}
+        </TagList>
+      )}
       <div
         id={tagEditorId}
         data-testid="combobox-container"

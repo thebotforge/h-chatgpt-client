@@ -21,6 +21,7 @@ import AnnotationQuote from '../Annotation/AnnotationQuote';
 import TagEditor from '../TagEditor';
 import ChatMessage from './ChatMessage';
 import ChatStats from './ChatStats';
+import { InfoIcon } from './../../../images/assets.js';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
@@ -172,20 +173,17 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
     ];
 
     return (
-      <div class={'flex flex-row'}>
+      <div class="flex flex-row gap-x-1 p-3 pt-0">
         {suggestions.map(suggestion => {
           return (
-            <button
+            <Button
               onClick={() =>
                 handleTextFieldChange({
                   target: { textContent: suggestion.suggestion },
                 })
-              }
-              class="inline-block mr bg-gray-100 p-2.5 gap-x-1.5 text-sm font-bold transition duration-200 ease-in-out hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
-              style="margin-right: 4px;"
-            >
+              }>
               {suggestion.tag}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -195,7 +193,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
   const messages = useMemo(() => {
     if (showMessages()) {
       return (
-        <div class="grid gap-4 p-3 pt-0">
+        <div class="grid gap-2 p-3 pt-0">
           {(currentChat?.messages ?? [])
             .filter(message => message?.role !== 'system')
             .map((message, index) => {
@@ -258,7 +256,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
         {store.getCurrentAnnotation() &&
           store.getCurrentAnnotation().target && (
             <>
-              <div class="p-3">{suggestions}</div>
+              {suggestions}
               <div class="p-3 pt-0">
                 <Input
                   aria-label={'chatinput'}
@@ -276,7 +274,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
                 class="relative flex flex-col p-3 border-t border-gray-1"
                 style={'justify-content: space-between;'}
               >
-                <div class="flex flex-col pt-3 pb-2">
+                <div class="flex flex-col pb-2">
                   <TagEditor
                     onAddTag={onAddTag}
                     onRemoveTag={onRemoveTag}
@@ -291,7 +289,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
                         data-testid="save-button"
                         onClick={onSave}
                         size="lg"
-                        classes="bg-grey-4"
+                        variant="primary"
                       >
                         Save
                       </Button>
@@ -305,48 +303,46 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
                       </Button>
                     </div>
                   </div>
-                  <div class="flex items-center">
-                    {' '}
+                  <div class="flex items-center relative">
                     <IconButton
-                      icon={HelpIcon}
+                      icon={InfoIcon}
                       onMouseEnter={handleMouseEnterChatIcon}
                       onMouseLeave={handleMouseLeaveChatIcon}
                       size="xs"
                       title="Info"
                     />
+                    {isHoveringChatIcon && (
+                      <ChatStats>
+                        {
+                          <>
+                            <div
+                              class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white bottom-0 right-0 w-64"
+                              style={{ transform: 'translateY(-2rem)'}}
+                            >
+                              <p><strong>Model:</strong> {'GPT-4'}</p>
+                              <p><strong>Tokens:</strong></p>
+                              <ul style={{ listStyle: 'disc', listStylePosition: 'inside'}}>
+                                <li>
+                                  {promptToken || 0} prompt tokens ($
+                                  {tokenCost(promptToken || 0)})
+                                </li>
+                                <li>
+                                  {completionToken || 0} completion tokens ($
+                                  {tokenCost(completionToken || 0)})
+                                </li>
+                                <li>
+                                  {totalToken || 0} total tokens ($
+                                  {tokenCost(totalToken || 0)})
+                                </li>
+                              </ul>
+                            </div>
+                          </>
+                        }
+                      </ChatStats>
+                    )}
                   </div>
                 </div>
               </div>
-
-              {isHoveringChatIcon && (
-                <ChatStats>
-                  {
-                    <>
-                      <div
-                        style="top: 10px; right: 28px;"
-                        class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white"
-                      >
-                        <p>Model: {'GPT-4'}</p>
-                        <p>Tokens:</p>
-                        <ul>
-                          <li>
-                            {promptToken || 0} prompt tokens ($
-                            {tokenCost(promptToken || 0)})
-                          </li>
-                          <li>
-                            {completionToken || 0} completion tokens ($
-                            {tokenCost(completionToken || 0)})
-                          </li>
-                          <li>
-                            {totalToken || 0} total tokens ($
-                            {tokenCost(totalToken || 0)})
-                          </li>
-                        </ul>
-                      </div>
-                    </>
-                  }
-                </ChatStats>
-              )}
             </>
           )}
       </div>

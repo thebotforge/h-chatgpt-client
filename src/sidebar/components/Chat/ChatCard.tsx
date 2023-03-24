@@ -43,13 +43,13 @@ export default function ChatCard({
   // collapsing/expanding is relevant?
   const [collapsible, setCollapsible] = useState(false);
   return (
-    <div class="flex flex-col bg-white p-3 mb-3">
-      <div class="flex">
+    <div class="bg-white p-3 mb-3">
+      <div class="flex mb-3">
         <div class="flex grow flex-row pl-2 text-md text-color-text font-bold">
           {/* <span class="pl-1.5">{chat.messages?.length} Responses</span> */}H
           User
         </div>
-        <div className="flex justify-end grow">
+        <div className="flex justify-end grow" style={{ opacity: 0.5 }}>
           <AnnotationTimestamps
             annotationCreated={chat.created as string}
             annotationUpdated={chat.updated as string}
@@ -58,7 +58,7 @@ export default function ChatCard({
           />
         </div>
       </div>
-      <div class="w-full">
+      <div class="w-full mb-3">
         {chat.annotation && (
           <AnnotationQuote
             quote={quote(chat.annotation) as string}
@@ -75,7 +75,7 @@ export default function ChatCard({
         onToggleCollapsed={setCollapsed}
         overflowThreshold={20}
       >
-        <div class="h-496">
+        <div class="grid gap-2 h-496">
           {(chat?.messages ?? [])
             .filter(message => message?.role !== 'system')
             .map((message, index) => {
@@ -88,7 +88,7 @@ export default function ChatCard({
             })}
         </div>
       </Excerpt>
-      <div class="flex flex-row-reverse">
+      <div class="flex">
         <div class="flex grow"></div>
         <IconButton
           icon={EditIcon}

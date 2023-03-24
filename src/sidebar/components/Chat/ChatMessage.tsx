@@ -40,7 +40,7 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
   return (
     <div
       aria-label={props}
-      class="relative flex items-center justify-end grow flex-row hover:cursor-pointer"
+      class="relative flex items-start justify-end grow flex-row hover:cursor-pointer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -57,11 +57,11 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
             <ChatStats>
               {
                 <>
-                  <div class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white">
-                    <p>{formatDate(new Date(message.timestamp))}</p>
-                    <p>Model: {message.model}</p>
-                    <p>Tokens:</p>
-                    <ul>
+                  <div class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white w-64">
+                    <p><strong>{formatDate(new Date(message.timestamp))}</strong></p>
+                    <p><strong>Model: </strong>{message.model || 'GPT-4'}</p>
+                    <p><strong>Tokens:</strong></p>
+                    <ul style={{ listStyle: 'disc', listStylePosition: 'inside'}}>
                       <li>
                         {message?.usage?.prompt_tokens || 0} prompt tokens ($
                         {tokenCost(message?.usage?.prompt_tokens || 0)})
@@ -91,11 +91,11 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
           </div>
         </div>
       ) : (
-        <div class={'pl-2'}>{message.content.trim()}</div>
+        <div class={'flex items-center pl-2'}>{message.content.trim()}</div>
       )}
 
       {isHovering && onDeleteMessage && (
-        <div class="absolute border border-gray-100 rounded bg-white top-0 right-0">
+        <div class="absolute border border-gray-100 rounded bg-white top-0 shadow" style={{ right: '-0.5rem'}}>
           <IconButton
             icon={TrashIcon}
             title="Edit"
