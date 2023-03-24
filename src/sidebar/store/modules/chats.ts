@@ -156,7 +156,7 @@ const reducers = {
       (chat: Chat) => chat.id === action.chat.id
     );
     let chats = state.chats;
-    let annotation = action.chat.annotation;
+    
     if (chatIndex === -1) {
       // Chat not found, add it to the chats array
       chats = [...state.chats, action.chat];
@@ -171,9 +171,7 @@ const reducers = {
 
     return {
       ...state,
-      chat: action.chat,
-      chats: chats,
-      annotation: annotation,
+      chats: chats
     };
   },
 };

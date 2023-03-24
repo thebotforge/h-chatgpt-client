@@ -236,6 +236,7 @@ export class ChatsService {
 
   saveChat() {
     this._store.updateChat(this._store.getCurrentChat() as Chat)
+    this._store.clearChat();
     this.persistChats();
   }
 

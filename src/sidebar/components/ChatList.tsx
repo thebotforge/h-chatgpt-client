@@ -8,6 +8,7 @@ import {
 import classNames from 'classnames';
 import { h, FunctionalComponent } from 'preact';
 import { useMemo, useState } from 'preact/hooks';
+import { AnnotationData } from '../../types/annotator';
 
 import { Chat, Message } from '../../types/chat';
 import { isOrphan, quote } from '../helpers/annotation-metadata';
@@ -68,8 +69,10 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
 
     if (id !== undefined) {
       const chat = store.findChatByID(id);
-
-      store.updateChat(chat as Chat);
+      
+      store.updateCurrentChat(chat as Chat);
+      // @ts-ignore
+      store.createAnnotation(chat.annotation)
     }
   };
 

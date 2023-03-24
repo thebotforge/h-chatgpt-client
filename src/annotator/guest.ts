@@ -807,7 +807,7 @@ export class Guest extends TinyEmitter implements Annotator, Destroyable {
     tags: string[],
     { toggle = false, focusInSidebar = false } = {}
   ) {
-    if (toggle) {
+     if (toggle) {
       this._sidebarRPC.call('toggleAnnotationSelection', tags);
     } else {
       this._sidebarRPC.call('showAnnotations', tags, focusInSidebar);

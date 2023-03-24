@@ -103,9 +103,13 @@ function Chat({
   //     : `New ${annotationRole(annotation).toLowerCase()}`;
 
   return (
-    <div className="space-y-4">
-      {useAnnotation && <ChatEditor chatsService={chatsService} />}
-    </div>
+    store.getCurrentAnnotation() &&
+          store.getCurrentAnnotation().target &&(
+            <div className="space-y-4">
+              {useAnnotation && <ChatEditor chatsService={chatsService} />}
+            </div>
+          )
+    
   );
 }
 

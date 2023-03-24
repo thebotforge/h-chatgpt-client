@@ -53,7 +53,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
   const onEditTags = useCallback(
     (tags: string[]) => {
       console.log(tags);
-      store.updateChat({ ...currentChat, tags });
+      store.updateCurrentChat({ ...currentChat, tags });
     },
     [currentChat, store]
   );
