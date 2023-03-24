@@ -3,9 +3,10 @@ import { Annotation } from './api';
 import { ChatMessage } from './chats-api';
 
 export interface Usage {
-  completion_tokens: number;
-  prompt_tokens: number;
-  total_tokens: number;
+    completion_tokens: number;
+    prompt_tokens: number;
+    total_tokens: number;
+    [key: string]: number | undefined;
 }
 
 export interface Parameters {
@@ -48,7 +49,7 @@ export function getOpenAIMessage(message: Message): ChatMessage {
 }
 
 export interface Chat {
-  id?: string;
+  id?: string | undefined;
   title?: string | null;
   messages?: Message[];
   created?: string | undefined;

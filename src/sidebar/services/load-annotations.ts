@@ -50,19 +50,19 @@ export type LoadAnnotationOptions = {
 export class LoadAnnotationsService {
   private _api: APIService;
   private _store: SidebarStore;
-  private _streamer: StreamerService;
+  //private _streamer: StreamerService;
   private _streamFilter: StreamFilter;
   private _searchClient: SearchClient | null;
 
   constructor(
     api: APIService,
     store: SidebarStore,
-    streamer: StreamerService,
+    //streamer: StreamerService,
     streamFilter: StreamFilter
   ) {
     this._api = api;
     this._store = store;
-    this._streamer = streamer;
+    //this._streamer = streamer;
     this._streamFilter = streamFilter;
 
     this._searchClient = null;
@@ -100,17 +100,17 @@ export class LoadAnnotationsService {
         this._streamFilter
           .resetFilter()
           .addClause('/group', 'equals', groupId, true);
-        this._streamer.setConfig('filter', {
-          filter: this._streamFilter.getFilter(),
-        });
+        // this._streamer.setConfig('filter', {
+        //   filter: this._streamFilter.getFilter(),
+        // });
         break;
       case 'uri':
       default:
         if (uris && uris.length > 0) {
           this._streamFilter.resetFilter().addClause('/uri', 'one_of', uris);
-          this._streamer.setConfig('filter', {
-            filter: this._streamFilter.getFilter(),
-          });
+          // this._streamer.setConfig('filter', {
+          //   filter: this._streamFilter.getFilter(),
+          // });
         }
         break;
     }
@@ -135,42 +135,42 @@ export class LoadAnnotationsService {
       sortOrder,
     };
 
-    this._searchClient = new SearchClient(this._api.search, searchOptions);
+    //this._searchClient = new SearchClient(this._api.search, searchOptions);
 
-    this._searchClient.on('resultCount', (count: number) => {
-      this._store.setAnnotationResultCount(count);
-    });
+    // this._searchClient.on('resultCount', (count: number) => {
+    //   this._store.setAnnotationResultCount(count);
+    // });
 
-    this._searchClient.on('results', (results: Annotation[]) => {
-      if (results.length) {
-        this._store.addAnnotations(results);
-      }
-    });
+    // this._searchClient.on('results', (results: Annotation[]) => {
+    //   if (results.length) {
+    //     this._store.addAnnotations(results);
+    //   }
+    // });
 
-    this._searchClient.on('error', (error: Error) => {
-      if (typeof onError === 'function') {
-        onError(error);
-      } else {
-        console.error(error);
-      }
-    });
+    // this._searchClient.on('error', (error: Error) => {
+    //   if (typeof onError === 'function') {
+    //     onError(error);
+    //   } else {
+    //     console.error(error);
+    //   }
+    // });
 
-    this._searchClient.on('end', () => {
-      // Remove client as it's no longer active.
-      this._searchClient = null;
+    // this._searchClient.on('end', () => {
+    //   // Remove client as it's no longer active.
+    //   this._searchClient = null;
 
-      if (uris && uris.length > 0) {
-        this._store.frames().forEach(frame => {
-          if (uris.indexOf(frame.uri) >= 0) {
-            this._store.updateFrameAnnotationFetchStatus(frame.uri, true);
-          }
-        });
-      }
-      this._store.annotationFetchFinished();
-    });
+    //   if (uris && uris.length > 0) {
+    //     this._store.frames().forEach(frame => {
+    //       if (uris.indexOf(frame.uri) >= 0) {
+    //         this._store.updateFrameAnnotationFetchStatus(frame.uri, true);
+    //       }
+    //     });
+    //   }
+    //   this._store.annotationFetchFinished();
+    // });
 
-    this._store.annotationFetchStarted();
-    this._searchClient.get({ group: groupId, uri: uris });
+    // this._store.annotationFetchStarted();
+    // this._searchClient.get({ group: groupId, uri: uris });
   }
 
   /**
@@ -189,40 +189,40 @@ export class LoadAnnotationsService {
     try {
       this._store.annotationFetchStarted();
       // 1. Fetch the annotation indicated by `id` — the target annotation
-      annotation = await this._api.annotation.get({ id });
+      //annotation = await this._api.annotation.get({ id });
 
       // 2. If annotation is not the top-level annotation in its thread,
       //    fetch the top-level annotation
-      if (isReply(annotation)) {
-        annotation = await this._api.annotation.get({
-          id: annotation.references![0],
-        });
-      }
+      // if (isReply(annotation)) {
+      //   annotation = await this._api.annotation.get({
+      //     id: annotation.references![0],
+      //   });
+      // }
 
       // 3. Fetch all of the annotations in the thread, based on the
       //    top-level annotation
-      replySearchResult = await this._api.search({ references: annotation.id });
+      //replySearchResult = await this._api.search({ references: annotation.id });
     } finally {
       this._store.annotationFetchFinished();
     }
-    const threadAnnotations = [annotation, ...replySearchResult.rows];
+    //const threadAnnotations = [annotation, ...replySearchResult.rows];
 
-    this._store.addAnnotations(threadAnnotations);
+    //this._store.addAnnotations(threadAnnotations);
 
     // If we've been successful in retrieving a thread, with a top-level annotation,
     // configure the connection to the real-time update service to send us
     // updates to any of the annotations in the thread.
-    if (!isReply(annotation)) {
-      const id = annotation.id!;
-      this._streamFilter
-        .addClause('/references', 'one_of', id, true)
-        .addClause('/id', 'equals', id, true);
-      this._streamer.setConfig('filter', {
-        filter: this._streamFilter.getFilter(),
-      });
-      this._streamer.connect();
-    }
+    // if (!isReply(annotation)) {
+    //   const id = annotation.id!;
+    //   this._streamFilter
+    //     .addClause('/references', 'one_of', id, true)
+    //     .addClause('/id', 'equals', id, true);
+    //   this._streamer.setConfig('filter', {
+    //     filter: this._streamFilter.getFilter(),
+    //   });
+    //   this._streamer.connect();
+    // }
 
-    return threadAnnotations;
+    // return threadAnnotations;
   }
 }

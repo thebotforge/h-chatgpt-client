@@ -82,7 +82,7 @@ function setupApi(api, streamer) {
  */
 function setupRoute(groups, session, router) {
   //groups.load();
-  session.load();
+  //session.load();
   router.sync();
 }
 

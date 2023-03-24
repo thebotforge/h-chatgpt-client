@@ -60,6 +60,7 @@ export class SessionService {
       this._lastLoadTime = Date.now();
       this._lastLoad = retryPromiseOperation(() => {
         const opts = this._authority ? { authority: this._authority } : {};
+        // @ts-ignore
         return this._api.profile.read(opts);
       })
         .then(session => {
@@ -80,6 +81,7 @@ export class SessionService {
    * tutorial and then update the local profile data.
    */
   async dismissSidebarTutorial() {
+    // @ts-ignore
     const updatedProfile = await this._api.profile.update(
       {},
       { preferences: { show_sidebar_tutorial: false } }
@@ -124,6 +126,7 @@ export class SessionService {
    */
   async logout() {
     try {
+      // @ts-ignore
       await this._auth.logout();
       return this.reload();
     } catch (err) {

@@ -11,7 +11,7 @@ export type State = typeof initialState;
 
 const initialState = {
   chatting: true,
-  chat: '',
+  chat: {id:'',tags: []},
   chats: [],
   annotation: {},
   openAIApiKey: '',
@@ -28,7 +28,7 @@ function isChatting(state: any) {
 
 const reducers = {
   CLEAR_CHAT(): Partial<State> {
-    return { chat: '' };
+    return { chat:{id:'',tags: []}};
   },
 
   CLEAR_ANNOTATION(): Partial<State> {
@@ -57,6 +57,18 @@ const reducers = {
     };
   },
 
+    /**
+   * @param {State} state
+   * @param {{ chat: Chat }} action
+   */
+    UPDATE_CURRENT_CHAT(state: any, action: { chat: Chat }) {
+      return {
+        ...state,
+        chat: action.chat,
+      };
+    },
+  
+
   /**
    * @param {State} state
    * @param {{ openAIApiKey: string }} action
@@ -78,17 +90,9 @@ const reducers = {
       messages: [...(currentChat?.messages || []), action.message],
     };
 
-    const chatIndex = state.chats.findIndex(
-      (chat: Chat) => chat.id === state.chat
-    );
-
     return {
       ...state,
-      chats: [
-        ...state.chats.slice(0, chatIndex),
-        chat,
-        ...state.chats.slice(chatIndex + 1),
-      ],
+      chat: chat,
     };
   },
 
@@ -141,6 +145,7 @@ const reducers = {
     };
   },
 
+
   /**
    * @param {State} state
    * @param {{ action: string }} action
@@ -166,7 +171,7 @@ const reducers = {
 
     return {
       ...state,
-      chat: action.chat.id,
+      chat: action.chat,
       chats: chats,
       annotation: annotation,
     };
@@ -191,11 +196,19 @@ function getChats(state: State): Chat[] {
 /**
  * Create or update a chat
  *
- * @param {ChatID} chat
  * @param {ChatChanges} changes
  */
 function updateChat(chat: Chat) {
   return makeAction(reducers, 'UPDATE_CHAT', { chat });
+}
+
+/**
+ * Create or update a chat
+ *
+ * @param {ChatChanges} changes
+ */
+function updateCurrentChat(chat: Chat) {
+  return makeAction(reducers, 'UPDATE_CURRENT_CHAT', { chat });
 }
 
 /**
@@ -221,8 +234,8 @@ function createOpenAIApiKey(openAIApiKey: string) {
  * get the current chat
  */
 
-function getCurrentChat(state: State) {
-  return findByID(state.chats, state.chat);
+function getCurrentChat(state: State) : Chat | undefined {
+  return state.chat
 }
 
 function getCurrentAnnotation(state: State): any {
@@ -272,7 +285,7 @@ function findChatByID(state: State, id: string) {
   return findByID(state.chats, id);
 }
 
-function findByID(chats: Chat[], id: string) {
+function findByID(chats: Chat[], id?: string) {
   return chats.find(a => a.id === id);
 }
 
@@ -283,6 +296,7 @@ export const chatsModule = createStoreModule(initialState, {
   actionCreators: {
     updateUserMessage,
     updateChat,
+    updateCurrentChat,
     clearChat,
     clearAnnotation,
     createAnnotation,

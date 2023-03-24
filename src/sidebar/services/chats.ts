@@ -1,7 +1,7 @@
 import { TextQuoteSelector } from '../../annotator/anchoring/types';
 import { generateHexString } from '../../shared/random';
 import { AnnotationData } from '../../types/annotator';
-import { getOpenAIMessage, Message } from '../../types/chat';
+import { getOpenAIMessage, Message, Usage,Chat } from '../../types/chat';
 import {
   ChatCompletionRequest,
   ChatCompletionResponse,
@@ -110,7 +110,7 @@ export class ChatsService {
       tags: [],
     };
 
-    this._store.updateChat(newChatData);
+    this._store.updateCurrentChat(newChatData)
 
     const newSystemMessage: Message = {
       id: generateHexString(8),
@@ -201,10 +201,10 @@ export class ChatsService {
         content: cleanedMessage,
         done: true,
         model: response.model,
-        usage: response.usage,
+        usage: response.usage as Usage,
       };
       this._store.createChatMessage(responseMessage);
-      this.persistChats();
+      //this.persistChats();
     } catch (error) {
       console.log(`problem sending to service ${error}`);
       const responseMessage: Message = {
@@ -235,6 +235,7 @@ export class ChatsService {
   }
 
   saveChat() {
+    this._store.updateChat(this._store.getCurrentChat() as Chat)
     this.persistChats();
   }
 

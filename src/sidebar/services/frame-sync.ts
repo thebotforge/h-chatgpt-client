@@ -376,7 +376,7 @@ export class FrameSyncService {
       this._guestRPC.delete(sourceId);
     });
 
-    // A new annotation, note or highlight was created in the frame
+    // A new chat was created in the frame
     guestRPC.on('createChat', (chat: AnnotationData) => {
       console.log('createChatEVent');
 

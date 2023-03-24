@@ -27,7 +27,7 @@ export type HypothesisAppProps = {
   auth: AuthService;
   frameSync: FrameSyncService;
   settings: SidebarSettings;
-  session: SessionService;
+  //session: SessionService;
   toastMessenger: ToastMessengerService;
 };
 
@@ -41,7 +41,7 @@ function HypothesisApp({
   auth,
   frameSync,
   settings,
-  session,
+  //session,
   toastMessenger,
 }: HypothesisAppProps) {
   const store = useSidebarStore();
@@ -71,11 +71,11 @@ function HypothesisApp({
     }
 
     try {
-      await auth.login();
+      //await auth.login();
 
       store.closeSidebarPanel('loginPrompt');
       store.clearGroups();
-      session.reload();
+      //session.reload();
     } catch (err) {
       toastMessenger.error(err.message);
     }
@@ -128,7 +128,7 @@ function HypothesisApp({
       return;
     }
 
-    session.logout();
+    //session.logout();
   };
 
   return (
@@ -183,7 +183,7 @@ function HypothesisApp({
 export default withServices(HypothesisApp, [
   'auth',
   'frameSync',
-  'session',
+  //'session',
   'settings',
   'toastMessenger',
 ]);

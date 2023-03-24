@@ -25,7 +25,7 @@ export type SidebarViewProps = {
   loadAnnotationsService: LoadAnnotationsService;
   loadChatsService: LoadChatsService;
   chatsService: ChatsService;
-  streamer: StreamerService;
+  //streamer: StreamerService;
 };
 
 /**
@@ -38,7 +38,7 @@ function SidebarView({
   loadAnnotationsService,
   chatsService,
   loadChatsService,
-  streamer,
+  //streamer,
 }: SidebarViewProps) {
   const rootThread = useRootThread();
 
@@ -163,7 +163,7 @@ function SidebarView({
         />
       )}
       <div>
-        {showChat && <Chat chat={{}} />}
+        {showChat && <Chat chat={{tags:[]}} />}
         {<ChatList chatsService={chatsService} chats={store.getChats()} />}
       </div>
 
@@ -177,5 +177,5 @@ export default withServices(SidebarView, [
   'loadAnnotationsService',
   'loadChatsService',
   'chatsService',
-  'streamer',
+  //'streamer',
 ]);

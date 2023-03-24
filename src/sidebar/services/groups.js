@@ -222,7 +222,6 @@ export class GroupsService {
    * Fetch the groups associated with the current user and document, as well
    * as any groups that have been direct-linked to.
    *
-   * @return {Promise<Group[]>}
    */
   async _loadGroupsForUserAndDocument() {
     const getDocumentUriForGroupSearch = () =>
@@ -247,12 +246,7 @@ export class GroupsService {
     const directLinkedAnnId = this._store.directLinkedAnnotationId();
     let directLinkedAnnApi = null;
     if (directLinkedAnnId) {
-      directLinkedAnnApi = this._api.annotation
-        .get({ id: directLinkedAnnId })
-        .catch(() => {
-          // If the annotation does not exist or the user doesn't have permission.
-          return null;
-        });
+      directLinkedAnnApi = ''
     }
 
     // If there is a direct-linked group, add an API request to get that
@@ -289,11 +283,11 @@ export class GroupsService {
       myGroups,
       featuredGroups,
       token,
-      directLinkedAnn,
-      directLinkedGroup,
+      //directLinkedAnn,
+      //directLinkedGroup,
     ] = await Promise.all([
-      this._api.profile.groups.read({ expand: expandParam }),
-      this._api.groups.list(listParams),
+      // this._api.profile.groups.read({ expand: expandParam }),
+      // this._api.groups.list(listParams),
       this._auth.getAccessToken(),
       directLinkedAnnApi,
       directLinkedGroupApi,
@@ -304,56 +298,47 @@ export class GroupsService {
     // don't already have it.
 
     // If there is a direct-linked group, add it to the featured groups list.
-    if (
-      directLinkedGroup &&
-      !featuredGroups.some(g => g.id === directLinkedGroup.id)
-    ) {
-      featuredGroups.push(directLinkedGroup);
-    }
+    // if (
+    //   directLinkedGroup &&
+    //   !featuredGroups.some(g => g.id === directLinkedGroup.id)
+    // ) {
+    //   featuredGroups.push(directLinkedGroup);
+    // }
 
     // If there's a direct-linked annotation it may require an extra API call
     // to fetch its group.
     let directLinkedAnnotationGroupId = null;
-    if (directLinkedAnn) {
+    //if (directLinkedAnn) {
       // Set the directLinkedAnnotationGroupId to be used later in
       // the filterGroups method.
-      directLinkedAnnotationGroupId = directLinkedAnn.group;
+      //directLinkedAnnotationGroupId = directLinkedAnn.group;
 
       // If the direct-linked annotation's group has not already been fetched,
       // fetch it.
-      const directLinkedAnnGroup = myGroups
-        .concat(featuredGroups)
-        .find(g => g.id === directLinkedAnn.group);
+      // const directLinkedAnnGroup = myGroups
+      //   .concat(featuredGroups)
+      //   .find(g => g.id === directLinkedAnn.group);
 
-      if (!directLinkedAnnGroup) {
-        try {
-          const directLinkedAnnGroup = await this._fetchGroup(
-            directLinkedAnn.group
-          );
-          featuredGroups.push(directLinkedAnnGroup);
-        } catch (e) {
-          this._toastMessenger.error(
-            'Unable to fetch group for linked annotation'
-          );
-        }
-      }
-    }
+      // if (!directLinkedAnnGroup) {
+      //   try {
+      //     const directLinkedAnnGroup = await this._fetchGroup(
+      //       directLinkedAnn.group
+      //     );
+      //     featuredGroups.push(directLinkedAnnGroup);
+      //   } catch (e) {
+      //     this._toastMessenger.error(
+      //       'Unable to fetch group for linked annotation'
+      //     );
+      //   }
+      // }
+    //}
 
     // Step 4. Combine all the groups into a single list and set additional
     // metadata on them that will be used elsewhere in the app.
     const isLoggedIn = token !== null;
-    const groups = await this._filterGroups(
-      combineGroups(myGroups, featuredGroups, documentUri, this._settings),
-      isLoggedIn,
-      directLinkedAnnotationGroupId,
-      directLinkedGroupId
-    );
+    
 
-    const groupToFocus =
-      directLinkedAnnotationGroupId || directLinkedGroupId || null;
-    this._addGroupsToStore(groups, groupToFocus);
-
-    return groups;
+return;
   }
 
   /**
@@ -368,9 +353,7 @@ export class GroupsService {
     // This reduces the number of requests to the backend on the assumption
     // that most or all of the group IDs that the service configures the client
     // to show are groups that the user is a member of.
-    const userGroups = await this._api.profile.groups.read({
-      expand: expandParam,
-    });
+    const userGroups = ['']
 
     let error;
     /** @param {string} id */
@@ -383,20 +366,18 @@ export class GroupsService {
       }
     };
 
-    /** @param {string} id */
-    const getGroup = id =>
-      userGroups.find(g => g.id === id || g.groupid === id) ||
-      tryFetchGroup(id);
+
+    const getGroup = ()=>{}
 
     const groupResults = await Promise.all(groupIds.map(getGroup));
-    const groups = /** @type {Group[]} */ (
-      groupResults.filter(g => g !== null)
-    );
+    // const groups = /** @type {Group[]} */ (
+    //   groupResults.filter(g => g !== null)
+    // );
 
     // Optional direct linked group id. This is used in the Notebook context.
     const focusedGroupId = this._store.directLinkedGroupId();
 
-    this._addGroupsToStore(groups, focusedGroupId);
+    //this._addGroupsToStore(groups, focusedGroupId);
 
     if (error) {
       // @ts-ignore - TS can't track the type of `error` here.
@@ -405,7 +386,7 @@ export class GroupsService {
       });
     }
 
-    return groups;
+    //return groups;
   }
 
   /**
@@ -424,7 +405,7 @@ export class GroupsService {
    * 2. The annotation service specifies exactly which groups to load via the
    *    configuration it passes to the client.
    *
-   * @return {Promise<Group[]>}
+
    */
   async load() {
     // The `groups` property may be a list of group IDs or a promise for one,
@@ -441,7 +422,7 @@ export class GroupsService {
           `Unable to fetch group configuration: ${e.message}`
         );
       }
-      return this._loadServiceSpecifiedGroups(groupIds);
+      //return this._loadServiceSpecifiedGroups(groupIds);
     } else {
       return this._loadGroupsForUserAndDocument();
     }

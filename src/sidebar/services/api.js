@@ -202,7 +202,7 @@ export class APIService {
    * @param {import('../store').SidebarStore} store
    */
   constructor(apiRoutes, auth, store) {
-    //const links = null //apiRoutes.routes();
+    const links = null //apiRoutes.routes();
 
     /**
      * Client session identifier included with requests. Used by the backend
@@ -215,13 +215,14 @@ export class APIService {
     const getClientId = () => this._clientId;
 
     /** @param {string} route */
-    // const apiCall = route =>
-    //   // createAPICall(links, route, {
-    //   //   getAccessToken: () => auth.getAccessToken(),
-    //   //   getClientId,
-    //   //   onRequestStarted: store.apiRequestStarted,
-    //   //   onRequestFinished: store.apiRequestFinished,
-    //   // });
+    const apiCall = route =>
+    // @ts-ignore
+      createAPICall(links, route, {
+        getAccessToken: () => auth.getAccessToken(),
+        getClientId,
+        onRequestStarted: store.apiRequestStarted,
+        onRequestFinished: store.apiRequestFinished,
+      });
 
     // Define available API calls.
     //
@@ -255,16 +256,16 @@ export class APIService {
     //   hide: /** @type {APICall<IDParam>} */ (apiCall('annotation.hide')),
     //   unhide: /** @type {APICall<IDParam>} */ (apiCall('annotation.unhide')),
     // };
-    // this.group = {
-    //   member: {
-    //     delete: /** @type {APICall<{ pubid: string, userid: string }>} */ (
-    //       apiCall('group.member.delete')
-    //     ),
-    //   },
-    //   read: /** @type {APICall<{ id: string, expand: string[] }, void, Group>} */ (
-    //     apiCall('group.read')
-    //   ),
-    // };
+    this.group = {
+      member: {
+        delete: /** @type {APICall<{ pubid: string, userid: string }>} */ (
+          apiCall('group.member.delete')
+        ),
+      },
+      read: /** @type {APICall<{ id: string, expand: string[] }, void, Group>} */ (
+        apiCall('group.read')
+      ),
+    };
 
     /**
      * @typedef ListGroupParams

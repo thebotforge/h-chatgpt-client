@@ -189,7 +189,6 @@ export class AuthService extends TinyEmitter {
    * Persist access and refresh tokens for later reuse
    */
   private _saveToken(token: TokenInfo) {
-    debugger;
     this._localStorage.setObject(this._storageKey(), token);
   }
 
@@ -227,6 +226,10 @@ export class AuthService extends TinyEmitter {
   /**
    * Retrieve an access token for use with the API
    */
+
+  async getAccessToken(): Promise<string | null> {
+    return Promise.resolve('');
+  }
   // async getAccessToken(): Promise<string | null> {
   //   if (!this._tokenInfoPromise) {
   //     // No access token is set: determine how to get one. This will depend on

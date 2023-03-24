@@ -14,5 +14,17 @@ export function tokenCost(tokenCount) {
  * @param {string} count
  */
 export function tokenCount(chats, count) {
-  return 0;
+  let totalTokens = 0;
+  
+    chats.forEach((item) => {
+      if (item.messages) {
+        item.messages.forEach((message) => {
+          if (message.role === 'assistant' && message.usage) {
+            totalTokens += message.usage[count] ?? 0;
+          }
+        });
+      }
+    });
+
+  return totalTokens;
 }
