@@ -19,9 +19,9 @@ import { tokenCost, tokenCount } from '../../util/chat';
 import AnnotationBody from '../Annotation/AnnotationBody';
 import AnnotationQuote from '../Annotation/AnnotationQuote';
 import TagEditor from '../TagEditor';
+import { InfoIcon } from './../../../images/assets.js';
 import ChatMessage from './ChatMessage';
 import ChatStats from './ChatStats';
-import { InfoIcon } from './../../../images/assets.js';
 
 export declare type OnSubmit = (name?: string) => Promise<boolean>;
 
@@ -181,7 +181,8 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
                 handleTextFieldChange({
                   target: { textContent: suggestion.suggestion },
                 })
-              }>
+              }
+            >
               {suggestion.tag}
             </Button>
           );
@@ -251,7 +252,9 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
         {header}
         {messages}
         {store.getCurrentAnnotation().$tag && store.isLoading() && (
-          <Spinner size="md" />
+          <span className="text-[16px] animate-fade-in-slow p-3 pt-0">
+            <Spinner size="sm" />
+          </span>
         )}
         {store.getCurrentAnnotation() &&
           store.getCurrentAnnotation().target && (
@@ -317,11 +320,20 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
                           <>
                             <div
                               class="focus-visible-ring absolute z-1 border shadow rounded bg-grey-7 px-3 py-2 text-white bottom-0 right-0 w-64"
-                              style={{ transform: 'translateY(-2rem)'}}
+                              style={{ transform: 'translateY(-2rem)' }}
                             >
-                              <p><strong>Model:</strong> {'GPT-4'}</p>
-                              <p><strong>Tokens:</strong></p>
-                              <ul style={{ listStyle: 'disc', listStylePosition: 'inside'}}>
+                              <p>
+                                <strong>Model:</strong> {'GPT-4'}
+                              </p>
+                              <p>
+                                <strong>Tokens:</strong>
+                              </p>
+                              <ul
+                                style={{
+                                  listStyle: 'disc',
+                                  listStylePosition: 'inside',
+                                }}
+                              >
                                 <li>
                                   {promptToken || 0} prompt tokens ($
                                   {tokenCost(promptToken || 0)})
