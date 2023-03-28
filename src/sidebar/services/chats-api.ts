@@ -18,6 +18,19 @@ import {
     .then(response => console.log(response))
     .catch(error => console.error(error));
 */
+
+
+
+class CustomResponse extends Response {
+  elapsedTime: number;
+
+  constructor(response: Response, elapsedTime: number) {
+    super(response.body, response);
+    this.elapsedTime = elapsedTime;
+  }
+}
+
+
 /**
  * @param {import('../store').SidebarStore} store
  */
@@ -39,16 +52,27 @@ export class ChatAPIService {
     onRequestStarted: Function,
     onRequestEnded: Function
   ) {
+
+
+    const startTime = performance.now(); // Get the start timestamp
+
     if (typeof onRequestStarted === 'function') {
       onRequestStarted();
     }
 
     return fetch(url, options)
       .then(response => {
+
+        const endTime = performance.now(); // Get the end timestamp
+        const elapsedTime = endTime - startTime; // Calculate the elapsed time
+        console.log(`API call took ${elapsedTime} ms`); // Log the elapsed time
+        
+
         if (typeof onRequestEnded === 'function') {
           onRequestEnded();
         }
-        return response;
+        
+        return new CustomResponse(response, elapsedTime);
       })
       .catch(error => {
         if (typeof onRequestEnded === 'function') {
@@ -78,7 +102,6 @@ export class ChatAPIService {
       this.store.apiRequestStarted,
       this.store.apiRequestFinished
     );
-
     if (!response.ok) {
       throw new Error(
         `Failed to complete chat: ${response.status} ${response.statusText}`
@@ -86,7 +109,7 @@ export class ChatAPIService {
     }
 
     const responseData = (await response.json()) as ChatCompletionResponse;
-
+    responseData.elapsedTime = response.elapsedTime;
     // Return the response data
     return responseData;
   }

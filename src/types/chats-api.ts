@@ -32,6 +32,7 @@ export interface ChatCompletionResponse {
   created: number;
   id: string;
   object: string;
+  elapsedTime: number;
   choices: {
     text: string;
     index: number;

@@ -3,7 +3,7 @@ import { h, FunctionComponent } from 'preact';
 import { useState } from 'preact/hooks';
 
 import { Message } from '../../../types/chat.js';
-import { tokenCost } from '../../util/chat.js';
+import { roundElapsedTime, tokenCost } from '../../util/chat.js';
 import { formatDate } from '../../util/time.js';
 import { ChatbotIcon } from './../../../images/assets.js';
 import ChatStats from './ChatStats.js';
@@ -76,6 +76,9 @@ const ChatMessage: FunctionComponent<MessageItemProps> = ({
                         {tokenCost(message?.usage?.total_tokens || 0)})
                       </li>
                     </ul>
+                    <p><strong>API time:</strong>     {roundElapsedTime(message.apiTime || 0)}</p>
+                    
+                
                   </div>
                 </>
               }

@@ -116,6 +116,7 @@ export class ChatsService {
       id: generateHexString(8),
       chatID: this._store.getCurrentChat()?.id,
       timestamp: Date.now(),
+      apiTime: 0,
       role: 'system',
       content: 'You are a helpful assistant and want to help with this text.',
       done: true,
@@ -193,6 +194,7 @@ export class ChatsService {
       const cleanedMessage =
         response['choices'][0]['message']['content'].trim();
       const cleanedRole = response['choices'][0]['message']['role'].trim();
+      
       const responseMessage: Message = {
         id: generateHexString(8),
         chatID: this._store.getCurrentChat()?.id,
@@ -202,9 +204,10 @@ export class ChatsService {
         done: true,
         model: response.model,
         usage: response.usage as Usage,
+        apiTime: response.elapsedTime
       };
       this._store.createChatMessage(responseMessage);
-      //this.persistChats();
+   
     } catch (error) {
       console.log(`problem sending to service ${error}`);
       const responseMessage: Message = {
@@ -212,6 +215,7 @@ export class ChatsService {
         chatID: this._store.getCurrentChat()?.id,
         timestamp: Date.now(),
         role: 'assistant',
+        apiTime: 0,
         content:
           '****************sorry I had a problem with the service*************',
         done: true,

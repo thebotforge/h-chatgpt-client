@@ -28,3 +28,19 @@ export function tokenCount(chats, count) {
 
   return totalTokens;
 }
+
+/**
+ * Round elapsed time
+ *
+ * @param {number} elapsedTime in milliseconds
+ * @return {string} A rounded time in seconds
+ */
+export function roundElapsedTime(elapsedTime){
+  if(!elapsedTime) return "";
+
+  const seconds = Math.floor(elapsedTime / 1000);
+  const remainingMs = elapsedTime % 1000;
+  const tenths = Math.round(remainingMs / 100);
+
+  return `${seconds}.${tenths} seconds`;
+}

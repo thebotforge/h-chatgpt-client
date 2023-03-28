@@ -27,6 +27,7 @@ export interface Message {
   usage?: Usage;
   model?: string;
   displayMessage?: string;
+  apiTime?:number | undefined;
 }
 
 export interface UserSubmittedMessage {

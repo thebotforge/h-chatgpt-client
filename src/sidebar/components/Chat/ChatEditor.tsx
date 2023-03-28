@@ -133,6 +133,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
       const value = event.target.textContent;
       setMsg(value);
       store.updateUserMessage(value);
+      sendMessage();
     },
     [store]
   );
