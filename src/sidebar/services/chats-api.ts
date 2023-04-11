@@ -3,7 +3,7 @@ import {
   ChatCompletionRequest,
   ChatCompletionResponse,
 } from '../../types/chats-api';
-
+import type { ToastMessengerService } from './toast-messenger';
 /*
   ChatService class that interacts with the Chat API
   const chatService = new ChatService('your_api_key_here');
@@ -33,17 +33,21 @@ class CustomResponse extends Response {
 
 /**
  * @param {import('../store').SidebarStore} store
+ * @param {import('./toastMessenger').ToastMessengerService} toastMessenger
+ * 
+ * @inject
  */
 export class ChatAPIService {
   // Set the URL for the Chat API and store the API key
   private readonly apiUrl = 'https://api.openai.com/v1/chat/completions';
   private readonly apiKey;
   private readonly store;
-
-  constructor(apiKey: string, store: any) {
+  private _toastMessenger: ToastMessengerService;
+  constructor(apiKey: string, store: any, toastMessenger: ToastMessengerService) {
     // Store the API key
     this.apiKey = apiKey;
     this.store = store;
+    this._toastMessenger = toastMessenger;
   }
 
   customFetch(
@@ -103,6 +107,12 @@ export class ChatAPIService {
       this.store.apiRequestFinished
     );
     if (!response.ok) {
+      this._toastMessenger.error(
+        `OpenAI API returned status: ${response.status}`,
+        {
+          autoDismiss: false,
+        }
+      );
       throw new Error(
         `Failed to complete chat: ${response.status} ${response.statusText}`
       );

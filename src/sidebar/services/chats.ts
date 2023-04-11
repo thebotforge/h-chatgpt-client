@@ -11,6 +11,7 @@ import * as metadata from '../helpers/annotation-metadata';
 import { SidebarStore } from '../store';
 import { ChatAPIService } from './chats-api';
 import { LocalStorageService } from './local-storage';
+import { ToastMessengerService } from './toast-messenger';
 
 /**
  * @typedef {import('../../types/api').Annotation} Annotation
@@ -28,6 +29,7 @@ export class ChatsService {
   private _store: SidebarStore;
   private _chatService?: ChatAPIService;
   private _localStorage: LocalStorageService;
+  private _toastMessenger: ToastMessengerService;
 
   /**
    * @param {import('./chats-api').ChatAPIService} api
@@ -36,11 +38,13 @@ export class ChatsService {
   constructor(
     api: ChatAPIService,
     store: SidebarStore,
-    localStorage: LocalStorageService
+    localStorage: LocalStorageService,
+    toastMessenger: ToastMessengerService
   ) {
     this._api = api;
     this._store = store;
     this._localStorage = localStorage;
+    this._toastMessenger = toastMessenger;
     const localKey = this._store.getDefault('openAIApiKey');
     if (typeof localKey === 'string') {
       this._store.createOpenAIApiKey(localKey);
@@ -187,7 +191,8 @@ export class ChatsService {
 
       this._chatService = new ChatAPIService(
         this._store.getOpenAIApiKey(),
-        this._store
+        this._store,
+        this._toastMessenger
       );
 
       const response = await this._chatService.completeChat(request);
