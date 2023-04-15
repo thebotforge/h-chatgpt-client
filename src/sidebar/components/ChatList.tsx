@@ -91,8 +91,6 @@ const ChatList: FunctionalComponent<ChatListProps> = ({
   };
 
   const displayChats = useMemo(() => {
-    console.log(store.getChats());
-
     if (store.getChats()) {
       const filteredChats = currentChat
         ? store.getChats().filter(item => item.id !== currentChat?.id)

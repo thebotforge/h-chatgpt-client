@@ -145,8 +145,6 @@ export class ChatsService {
   }
 
   public async sendMessage() {
-    //this.messages.push(this._store.getCurrentChat());
-    console.log('Message sent:', this._store.getCurrentChat());
     try {
       //check if current message has an id
       if (
@@ -174,7 +172,6 @@ export class ChatsService {
         //if not then create a new chat
         await this.sendNewMessage();
         await this.completeMessage();
-        //this.persistChats();
       }
     } catch (error) {
       console.error(error);
@@ -226,7 +223,6 @@ export class ChatsService {
         done: true,
       };
       this._store.createChatMessage(responseMessage);
-      //this.persistChats();
     }
   }
 

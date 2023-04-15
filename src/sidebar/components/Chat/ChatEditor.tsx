@@ -7,7 +7,7 @@ import {
   Input,
   Spinner,
 } from '@hypothesis/frontend-shared/lib/next';
-import { useCallback, useState, useRef, useMemo } from 'preact/hooks';
+import { useCallback, useState, useRef, useMemo, useEffect, useLayoutEffect } from 'preact/hooks';
 
 import { Chat } from '../../../types/chat';
 import { isOrphan, quote } from '../../helpers/annotation-metadata';
@@ -38,6 +38,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
   const [pendingTag, setPendingTag] = useState<string | null>(null);
   const isEmpty = false;
   const inputRef = useRef<HTMLInputElement>(null);
+  
   const promptToken = tokenCount(store.getChats(), 'prompt_tokens');
   const completionToken = tokenCount(store.getChats(), 'completion_tokens');
   const totalToken = promptToken + completionToken;
@@ -109,6 +110,11 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
     handleReset();
   };
 
+
+  const onEnter = () =>{
+    sendMessage()
+  }
+
   const onKeyDown = (event: KeyboardEvent) => {
     const key = event.key;
     if (isEmpty) {
@@ -155,16 +161,22 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
 
   // Revert changes to this annotation
   const onCancel = () => {
-    console.log('cancel');
     store.clearAnnotation();
     store.clearChat();
   };
 
   // Revert changes to this annotation
   const onSave = () => {
-    console.log('save');
     chatsService.saveChat();
   };
+
+  const isEnterEnabled = msg.length > 0;
+
+  const setInputFocus = () =>{
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }
 
   const suggestions = useMemo(() => {
     const suggestions = [
@@ -213,6 +225,7 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
   }, [store, currentChat, currentAnnotation]);
 
   const header = useMemo(() => {
+    setInputFocus();
     const annotationQuote =
       store.getCurrentAnnotation() && store.getCurrentAnnotation().target
         ? quote(store.getCurrentAnnotation())
@@ -240,6 +253,13 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
       </div>
     );
   }, [currentAnnotation]);
+// the callback here will run after <App> is rendered:
+useEffect(() => {
+  // access the associated DOM element:
+  if(inputRef.current)
+  inputRef.current.focus()
+}, [])
+
   const handleMouseEnterChatIcon = () => {
     setIsHoveringChatIcon(true);
   };
@@ -260,19 +280,29 @@ function ChatEditor({ chatsService, tags: tagsService }: ChatEditorProps) {
         {store.getCurrentAnnotation() &&
           store.getCurrentAnnotation().target && (
             <>
-              {suggestions}
-              <div class="p-3 pt-0">
+              {/* {suggestions} */}
+              <div class="flex p-3 pt-0 space-x-2">
                 <Input
                   aria-label={'chatinput'}
-                  ref={inputRef}
+                  elementRef={inputRef}
                   type="text"
-                  placeholder={'Add a custom prompt'}
+                  placeholder={'Your prompt'}
                   name="message"
                   value={msg}
                   onInput={onChange}
                   onKeyDown={onKeyDown}
                   class="bg-gray-100 border border-solid border-gray-400 rounded"
+                  autofocus
                 />
+                <Button
+                        data-testid="enter-button"
+                        onClick={onEnter}
+                        size="lg"
+                        variant="primary"
+                        disabled={!isEnterEnabled}
+                      >
+                        Enter
+                        </Button>
               </div>
               <div
                 class="relative flex flex-col p-3 border-t border-gray-1"

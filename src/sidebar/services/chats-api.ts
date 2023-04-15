@@ -107,6 +107,8 @@ export class ChatAPIService {
       this.store.apiRequestFinished
     );
     if (!response.ok) {
+      console.error('OpenAI returned an error:', response);
+
       this._toastMessenger.error(
         `OpenAI API returned status: ${response.status}`,
         {
@@ -116,6 +118,8 @@ export class ChatAPIService {
       throw new Error(
         `Failed to complete chat: ${response.status} ${response.statusText}`
       );
+    }else{
+      console.log('OpenAI returned:', response);
     }
 
     const responseData = (await response.json()) as ChatCompletionResponse;
